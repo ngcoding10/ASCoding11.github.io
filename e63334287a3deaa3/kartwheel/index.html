@@ -2192,6 +2192,11 @@ const Music={song:-1,step:0,next:0,on:false,fast:1,
 //  Input: keyboard, touch buttons and a gamepad
 // =====================================================================
 const keys=new Set(),press={hop:false,item:false},tch={l:false,r:false,dr:false,it:false,bk:false};
+// Phone remote (hidden and experimental, see README): a phone as a tilt controller. Nothing is loaded and PR stays
+// null unless the address has ?remote=1; then ../phoneremote.js shows a pairing panel and humanInput() reads it.
+let PR=null;
+if(/[?&]remote=1(&|$)/.test(location.search))loadScript('../phoneremote.js').then(()=>{PR=window.PhoneRemote.host({game:'Kartwheel',labels:{a:'Drift',b:'Brake',c:'Item'}})}).catch(()=>{});
+if(navigator.webdriver)window.__kw={get remote(){return PR},get race(){return race},get state(){return state}}; // for automated tests only
 let lastReset=0;
 function padState(){
   const gps=navigator.getGamepads?navigator.getGamepads():[];const p=gps&&[...gps].find(x=>x&&x.connected);if(!p)return null;
@@ -2210,6 +2215,9 @@ function humanInput(c,dt){
   const gp=padState();
   if(gp){if(gp.thr)thr=1;if(gp.brk)brk=1;if(gp.steer)st=gp.steer;if(gp.hop){hop=true;if(!padPrev.hop)hopPress=true}if(gp.item&&!padPrev.item)item=true;if(gp.back)back=true;padPrev={hop:gp.hop,item:gp.item}}
   if(touchUI&&!keys.size&&!gp){thr=tch.bk?0:1;brk=tch.bk?1:0;st=(tch.r?1:0)-(tch.l?1:0);hop=tch.dr;if(tch.drPress){hopPress=true;tch.drPress=false}if(tch.itPress){item=true;tch.itPress=false}back=tch.bk}
+  // Phone remote (hidden, experimental; only with ?remote=1, see below): driven like the touch buttons. The kart goes
+  // by itself, tilting the phone steers (unless a steering key is down), A is the power slide, B brakes, C uses the item.
+  if(PR&&PR.connected){thr=PR.b?0:1;if(PR.b){brk=1;back=true}if(!st)st=PR.steer;if(PR.a)hop=true;if(PR.pressed('a'))hopPress=true;if(PR.pressed('c'))item=true}
   if(raceT()<0){item=false;hopPress=false}
   const cur=c.inSteer||0,rate=(st===0||Math.sign(st)!==Math.sign(cur))?9:5.5;
   c.inSteer=cur+clamp(st-cur,-rate*dt,rate*dt);
