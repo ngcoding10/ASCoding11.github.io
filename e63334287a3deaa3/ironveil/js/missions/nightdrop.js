@@ -108,6 +108,11 @@
     // the farm sits on a levelled rise
     const df = Math.hypot((x - FARM.x) / 1.15, z - FARM.z - 4);
     h = h + (farmH - h) * bump(df, 34, 52);
+    // terrain step 4: the farm, its orchard and the gun positions stand on a slight rise: the land round the whole
+    // cluster falls about 1.1 m over 30 m (2 degrees) and comes back up 40-80 m out, so the combat areas keep exactly
+    // the ground they had relative to each other and only their surroundings drop
+    { let dcl = 1e9; for (const [cx, cz, r] of [[FARM.x, FARM.z + 4, 52], [AA.x, AA.z, 25], [MG.x, MG.z, 25], [58, -86, 30]]) dcl = Math.min(dcl, Math.hypot(x - cx, z - cz) - r);
+      if (dcl > 8) h -= 1.1 * IV.smooth(IV.clamp((dcl - 8) / 32, 0, 1)) * (1 - IV.smooth(IV.clamp((dcl - 40) / 40, 0, 1))); }
     // crossroads level
     h = h + (base(0, 10) - h) * bump(Math.hypot(x, z - 10), 10, 18);
     // the hamlet street climbs north from the crossroads (about 3 m over 90 m, under 2 degrees) and the church stands
@@ -329,6 +334,11 @@
       for (let t = 0; t < 1; t += 0.06) { const r = IV.polyDist(0, 0, ST); const i = Math.floor(t * (ST.length - 1)), a = ST[i], c = ST[i + 1], u = t * (ST.length - 1) - i, x = a[0] + (c[0] - a[0]) * u, z = a[1] + (c[1] - a[1]) * u; tree(x + (RF2() < 0.5 ? -7 : 7), z + RF2.range(-3, 3), 'ash'); }
       for (let z = 112; z < 180; z += 12) { tree(6.5, z + RF2.range(-1, 1), 'poplar'); }
       for (const [x, z] of [[-24, 40], [-25, 77], [22, 58], [24, 30], [-27, 98], [43, 99], [31, 99], [44, 76]]) tree(x, z, RF2() < 0.6 ? 'apple' : 'ash');
+      // the middle distance in every direction: a band of woods and copses 140-185 m out (conifer stands among them,
+      // some burnt), so no view ends in an empty field edge (clear() keeps them off every route)
+      { const RB2 = IV.rng(2525);   // its own stream, so the trees placed after it (orchard, field oaks) do not move
+      for (let a = 0; a < 6.283; a += 0.2) { const r = 150 + RB2() * 32, cx = Math.cos(a) * r * 1.15, cz = Math.sin(a) * r * 1.15, n = 3 + (RB2() * 4 | 0), con = RB2() < 0.35;
+        for (let k = 0; k < n; k++) { const x = IV.clamp(cx + RB2.range(-9, 9), -186, 186), z = IV.clamp(cz + RB2.range(-9, 9), -186, 186); const kind = con ? 'pine' : RB2() < 0.06 ? 'burnt' : RB2() < 0.55 ? 'oak' : 'ash'; if (clear(x, z)) IV.art.tree(b, x, z, kind, RB2); } } }
       for (const [x, z] of [[-110, 40], [-70, 100], [60, 100], [140, 90], [-120, -60], [90, 0], [-40, 140], [150, -110], [-140, 165], [40, -150]]) tree(x, z, 'oak');
       for (const [x, z] of [[-58, 58], [-62, 152], [-28, 72], [97, 26], [32, -57], [148, -72], [-168, -78], [-72, -88]]) for (let i = 0; i < 3; i++) tree(x + RF2.range(-3, 3), z + RF2.range(-3, 3), 'apple'); } }
     // ---- the war has passed through here (destruction-and-bullet-damage, mud-and-splashes): every shell hole has a
