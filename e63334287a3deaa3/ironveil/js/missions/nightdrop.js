@@ -131,6 +131,9 @@
     h -= (1.25 + deep) * lane * (1 - bump(ds, 4, 9));
     // the stream bed
     h -= 1.9 * bump(ds, 1.2, 5.5);
+    // terrain step 5: the stream runs between low banks: a lip about 0.5 m high 5-11 m from the water (cover from
+    // the fields), none at the stone bridge or the footbridge, so both crossings are as before
+    h += 0.5 * bump(ds, 6.5, 11) * (1 - bump(ds, 4.6, 6.4)) * (1 - bump(Math.hypot(x + 41, z - 18), 10, 18)) * (1 - bump(Math.hypot(x + 41, z + 35), 9, 15));
     // the bridge approach stays at bank height
     if (Math.hypot(x + 41, z - 18) < 9) h = Math.max(h, base(-41, 18) - 1.0);
     return h;
