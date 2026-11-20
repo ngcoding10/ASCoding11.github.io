@@ -116,6 +116,12 @@
     }
     // boarded up: planks nailed across the frame at odd angles (empty or shot-up houses)
     if (!o.lit && (o.boarded || (S.damage > 0.3 && R() < 0.35))) { const bp = out(o.T / 2 + 0.03); for (let k = 0; k < 3 + R.int(2); k++) { const yy = o.y0 + (o.y1 - o.y0) * (0.12 + 0.25 * k) + R.range(-0.05, 0.05); B.box('planks', bp[0] + nx * 0.01 * k, yy, bp[1] + nz * 0.01 * k, o.w + R.range(0.15, 0.35), R.range(0.13, 0.2), 0.025, rot, { rz: R.range(-0.25, 0.25), tint: tintJ(R, 0.15, 0xc8bca8) }); } }
+    // lit: a curtain drawn part way across one side and a blind pulled down at the top, just inside the glass, so the
+    // light is uneven (brightest low where the lamp is) and the frame and bars stand in silhouette; warm spill on the sill
+    if (o.lit) { const ip = out(o.T / 2 - inset - 0.07), side = R() < 0.5 ? -1 : 1, cw = o.w * R.range(0.25, 0.45), bh = (o.y1 - o.y0) * R.range(0.18, 0.35);
+      B.box('canvas', ip[0] + o.dx * side * (o.w / 2 - cw / 2), o.y0 + 0.02, ip[1] + o.dz * side * (o.w / 2 - cw / 2), cw, o.y1 - o.y0 - 0.04, 0.015, rot, { noFoot: true, tint: new THREE.Color(0.55, 0.42, 0.3) });
+      B.box('wood_painted', ip[0], o.y1 - bh, ip[1], o.w - 0.04, bh, 0.012, rot, { noFoot: true, tint: new THREE.Color(0.35, 0.3, 0.26) });
+      const sp2 = out(o.T / 2 + 0.035); B.decal('grime', [sp2[0], o.y0 - 0.02, sp2[1]], [0, 1, 0], o.w * 0.8, 0.18, 0); }
     // a dark backing so an unlit window does not show the sky through the building
     if (!o.lit && !S.interior) { const bp = out(o.T / 2 - inset - 0.2), P = (a, y) => [bp[0] + o.dx * a, y, bp[1] + o.dz * a]; B.quad('timber', P(-o.w / 2, o.y0), P(o.w / 2, o.y0), P(o.w / 2, o.y1), P(-o.w / 2, o.y1), [[0, 0], [1, 0], [1, 1], [0, 1]], new THREE.Color(0.08, 0.08, 0.08), null); }
     // sill: dressed stone, proud of the wall and wider than the opening, with a drip and a stain under it
@@ -228,6 +234,7 @@
         const nOff = (p, k) => [p[0], p[1] + k * Math.cos(pitch), p[2] + side * k * Math.sin(pitch)];
         const hole = holes.has(i + ':' + j + ':' + side) || inShell((xa + xb) / 2, (ta + tb) / 2, side);
         const a = pt(xa, ta, 0), b = pt(xb, ta, 0), c = pt(xb, tb, 0), dd = pt(xa, tb, 0);
+        if (j === 0) { const jg = (E.hash(i, side, S.seed) - 0.5) * 0.08, sl = E.hash(i, side + 5, S.seed) < 0.12 ? 0.12 : 0; for (const q of [a, b]) { q[1] -= jg + sl * 0.5; q[2] += side * sl; } }   // ragged eave: tiles slipped or short
         const sa = slope * ta, sb = slope * tb;
         if (!hole) {
           const A = nOff(a, th), Bp = nOff(b, th), C = nOff(c, th), D = nOff(dd, th);
@@ -1054,7 +1061,7 @@
   };
   E.settle = function (specs, opts) {
     opts = opts || {};
-    const Q = E.Q.name, near = opts.near || (Q === 'low' ? 26 : Q === 'high' ? 55 : 34), hf = opts.heightFn || (() => 0);
+    const Q = E.Q.name, near = opts.near || (Q === 'low' ? 26 : Q === 'high' ? 45 : 34), hf = opts.heightFn || (() => 0);
     const SB = E.builder(opts.seed || 77), detailRoot = new THREE.Group(), group = new THREE.Group(); group.name = 'IVEnv.settlement';
     const colliders = [], lights = [], chimneys = [], RR = E.rng((opts.seed || 77) * 3 + 1);
     for (const sp0 of specs) {
@@ -1078,6 +1085,7 @@
         for (const side of [-1, 1]) for (let f = 0; f < fl; f++) for (let i = 0; i < nW; i++) {
           const lx = -X / 2 + (i + 0.5) * X / nW, lit = RR() < (sp.lit || 0) * (side > 0 ? 1 : 0.6), p = W(lx, side * (Z / 2 + 0.01));
           SB.box(lit ? 'glass_lit' : 'timber', p[0], y + 0.95 + f * 2.7, p[1], 0.85, 1.25, 0.03, rot, { noFoot: true, tint: lit ? null : new THREE.Color(0.06, 0.06, 0.06) });
+          if (lit) { const b2 = W(lx, side * (Z / 2 + 0.03)), dk = new THREE.Color(0.08, 0.07, 0.06); SB.box('timber', b2[0], y + 0.95 + f * 2.7 + 0.6, b2[1], 0.85, 0.05, 0.02, rot, { noFoot: true, tint: dk }); SB.box('timber', b2[0], y + 0.95 + f * 2.7, b2[1], 0.05, 1.25, 0.02, rot, { noFoot: true, tint: dk }); SB.box('timber', b2[0], y + 0.95 + f * 2.7 + 0.9 + RR() * 0.2, b2[1], 0.85, 0.35, 0.02, rot, { noFoot: true, tint: new THREE.Color(0.18, 0.14, 0.1) }); }
           { const q = W(lx, side * (Z / 2 + 0.04)); SB.box('ashlar', q[0], y + 0.86 + f * 2.7, q[1], 1.05, 0.09, 0.07, rot, { noFoot: true, tint: new THREE.Color(0.75, 0.73, 0.68) }); SB.box('ashlar', q[0], y + 2.2 + f * 2.7, q[1], 1.15, 0.16, 0.08, rot, { noFoot: true, tint: new THREE.Color(0.7, 0.68, 0.64) }); }   // sill and lintel
           if (lit) lights.push({ x: p[0] + s * side * 1.0, y: y + 1.4 + f * 2.7, z: p[1] + c * side * 1.0, wx: p[0], wz: p[1], nx: s * side, nz: c * side, f });
         }
@@ -1101,14 +1109,14 @@
     }
     let shells = SB.finish({ castShadow: false }); shells.name = 'IVEnv.shells';
     // shell-only settlements (far skylines) in one plain vertex-coloured mesh: one draw call instead of one per material
-    if (opts.shellOnly && E.mergeStatic && E.Q.name !== 'high') { const wrap = new THREE.Group(); wrap.add(shells); const m = E.mergeStatic(wrap, { flat: true }); m.traverse(o => { if (o.isMesh) o.castShadow = false; }); shells = m; shells.name = 'IVEnv.shells'; }
+    if (opts.shellOnly && E.mergeStatic) { const wrap = new THREE.Group(); wrap.add(shells); const m = E.mergeStatic(wrap, { flat: true }); m.traverse(o => { if (o.isMesh) o.castShadow = false; }); shells = m; shells.name = 'IVEnv.shells'; }
     group.add(shells);
     if (opts.pools !== false && lights.length) { try { group.add(E.glowPools(lights.filter(l => l.nx != null && l.f === 0).map(l => [l.wx, l.wz, l.nx, l.nz, 3.4, 0.16]), hf)); } catch (e) { console.warn('pools', e); } }
     if (detailRoot.children.length) {
       const merged = E.mergeStatic ? E.mergeStatic(detailRoot, { cell: 80 }) : detailRoot; merged.name = 'IVEnv.settlement-detail'; group.add(merged);
       // only walls and roofs cast shadows (Low and Medium): frames, glass, doors, metal and timber trim each cost a
       // shadow draw call per cell for shadows nobody reads at night
-      if (E.Q.name !== 'high') { const BIG = { fieldstone: 1, brick_red: 1, brick_sooty: 1, plaster: 1, roof_tile: 1, slate: 1, planks: 1, ashlar: 0 }; merged.traverse(o => { if (o.isMesh && o.material && o.material.userData && !BIG[o.material.userData.ivenv]) o.castShadow = false; }); }
+      { const BIG = { fieldstone: 1, brick_red: 1, brick_sooty: 1, plaster: 1, roof_tile: 1, slate: 1, planks: 1, ashlar: 0 }; merged.traverse(o => { if (o.isMesh && o.material && o.material.userData && !BIG[o.material.userData.ivenv]) o.castShadow = false; }); }
       if (merged !== detailRoot && detailRoot.children.length) group.add(detailRoot);   // anything that could not merge
       const list = []; merged.traverse(o => { if (o.isMesh) { if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere(); list.push(o); } });
       const v = new THREE.Vector3();
