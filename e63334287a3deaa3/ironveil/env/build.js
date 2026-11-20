@@ -520,8 +520,17 @@
       const r = house(Bu, Su, { w: uw, d, T, floors, storey, out: plaster ? 'plaster' : (R() < 0.3 ? 'brick_sooty' : 'brick_red'), in: 'plaster_interior', roof: R() < 0.6 ? 'slate' : 'roof_tile', head: plaster ? 'lintel' : 'arch', doorHead: 'timber', front, back: bays(uw, 2, storey + 0.9, storey + 2.1, { w: 0.8 }), left: [], right: [], pitch: 0.7 + R() * 0.15, quoins: plaster, sag: 0.03 + R() * 0.05, gableOver: 0.02, over: 0.3 });
       // fascia sign with a painted name (invented shop words only)
       const sign = signMesh(NAMES[(S.seed + i * 3) % NAMES.length], uw - 0.5, 0.58, Su.R);
-      sign.position.set(ox, 2.6, d / 2 + 0.06); S.group.add(sign);
-      Bu.box('timber', 0, 2.55, d / 2 + 0.02, uw - 0.4, 0.62, 0.06, 0, { grain: 'long', tint: new THREE.Color(0.55, 0.5, 0.45) });
+      sign.position.set(ox, 2.6, d / 2 + 0.17); S.group.add(sign);
+      // the shop front stands out from the wall: a fascia board 15 cm proud under a moulded cornice, pilasters either
+      // side of the shop window, a panelled stall-riser under it, a stone doorstep
+      const pt = Su.paintTint, wa0 = -uw / 2 + 0.45, wa1 = -uw / 2 + uw * 0.55, dx0 = -uw / 2 + uw * 0.72;
+      Bu.box('wood_painted', 0, 2.5, d / 2 + 0.07, uw - 0.3, 0.72, 0.15, 0, { tint: pt });
+      Bu.box('wood_painted', 0, 3.2, d / 2 + 0.1, uw - 0.15, 0.1, 0.24, 0, { tint: pt }); Bu.box('wood_painted', 0, 3.28, d / 2 + 0.06, uw - 0.25, 0.06, 0.14, 0, { tint: pt });
+      for (const x of [wa0 - 0.08, wa1 + 0.08, dx0 + 0.6]) Bu.box('wood_painted', x, 0, d / 2 + 0.05, 0.16, 2.55, 0.1, 0, { tint: pt });
+      Bu.box('wood_painted', (wa0 + wa1) / 2, 0, d / 2 + 0.03, wa1 - wa0, 0.6, 0.06, 0, { tint: pt }); Bu.box('wood_painted', (wa0 + wa1) / 2, 0.56, d / 2 + 0.06, wa1 - wa0 + 0.06, 0.06, 0.12, 0, { tint: pt });
+      for (const k of [-1, 1]) Bu.box('wood_painted', (wa0 + wa1) / 2 + k * (wa1 - wa0) / 4, 0.12, d / 2 + 0.065, (wa1 - wa0) / 2 - 0.14, 0.34, 0.02, 0, { tint: pt });
+      Bu.box('ashlar', dx0, -0.04, d / 2 + 0.22, 1.25, 0.16, 0.45, 0, { tint: tintJ(Su.R, 0.06, 0xa8a090) });
+      E.ageMesh(Bu, { w: uw, d, eave: floors * storey, ridge: floors * storey + d / 2 * 0.75, seed: S.seed + i, amount: 0.7 });   // no front is a true rectangle
       chimney(Bu, Su, uw / 2 - 0.35, -1, r.wallH - 1, r.ridge + 1.0, true);
       const g = Bu.finish(); g.position.x = ox; S.group.add(g);
       Su.colliders = Bu.colliders.map(c => Object.assign(c, { x: c.x + ox })); S.extraCols.push(...Su.colliders);
