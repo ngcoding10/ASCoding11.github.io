@@ -85,6 +85,10 @@
  */
 (function () {
   var NEWS = [
+    {date: '2026-11-22', version: '1.41.3', title: 'Movi: privacy policy and terms', kind: 'fix',
+     tags: ['Movi'], items: [
+      'Movi now has its own privacy policy and terms of service, linked from its sign-up screen and Settings.'
+    ]},
     {date: '2026-11-22', version: '1.41.2', title: 'It has a shape now', kind: 'soon',
      img: 'news-soon.jpg', tags: ['???', 'Coming soon'], items: [
       'Whatever was warming up has a real shape now, down to the rivets.',

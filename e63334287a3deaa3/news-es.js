@@ -6,6 +6,8 @@
 (function () {
   if (!window.BackRoomLang) return;
   BackRoomLang.add({
+    "Movi: privacy policy and terms": "Movi: política de privacidad y condiciones",
+    "Movi now has its own privacy policy and terms of service, linked from its sign-up screen and Settings.": "Movi ya tiene su propia política de privacidad y condiciones de servicio, enlazadas desde la pantalla de registro y los Ajustes.",
     "It has a shape now": "Ya tiene forma",
     "Whatever was warming up has a real shape now, down to the rivets.": "Lo que se estaba calentando ya tiene una forma de verdad, hasta los remaches.",
     "Still not ready, and still loud.": "Todavía no está listo, y sigue haciendo ruido.",
