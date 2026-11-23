@@ -16,3 +16,8 @@ rendering. They block every host except localhost, cdnjs and Google Fonts, so no
 `lib.mjs`: `open()` starts the page with the preview gate opened in the served copy only (the shipped file is not
 touched), `waitState()`, `snap()`. The page exposes `window.__IV__` test hooks when loaded with `?test`. Stills and
 logs go to `$OUT` (default `./out`). One browser job at a time; a boot takes 1 to 3 minutes on a 4-core machine.
+
+Scripted fights (written by the enemies helper): `WT=... bash run.sh ft-measure.mjs <difficulty 0|1|2>
+detect,acc,hide,cost2,f1,f2,f3,f4 <runs>` builds a small arena on open ground in Night Drop and measures time to
+first shot, hit chance by range and stance, what the squad knows after you hide, AI cost, and four fights (stand in
+the open, sprint across, cover and bursts, flank in the dark). `python3 tables.py <output file>` prints tables.
