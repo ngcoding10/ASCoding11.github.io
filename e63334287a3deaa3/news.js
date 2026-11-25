@@ -85,6 +85,11 @@
  */
 (function () {
   var NEWS = [
+    {date: '2026-11-25', version: '1.57', title: 'The Pantry: cook from what you have', kind: 'feature',
+     tags: ['Recipes', 'Cooking'], link: {text: 'Open The Pantry', href: '/the-pantry/'}, items: [
+      'The Pantry is a new recipe tool: browse a recipe library, or list what\'s in your fridge and see what you can cook with it.',
+      'Ask it to write a recipe for you, or scan a food label or look up a product.',
+      'Sign in to keep your pantry and saved recipes.']},
     {date: '2026-11-25', version: '1.51.3', title: 'A proper "page not found"', kind: 'fix',
      items: [
       'A mistyped or old link now shows a "Page not found" page with buttons back to the home page, the games and the study tools, instead of a plain error or the home page.',

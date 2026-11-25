@@ -6,6 +6,13 @@
 (function () {
   if (!window.BackRoomLang) return;
   BackRoomLang.add({
+    "The Pantry: cook from what you have": "The Pantry: cocina con lo que tienes",
+    "Recipes": "Recetas",
+    "Cooking": "Cocina",
+    "Open The Pantry": "Abrir The Pantry",
+    "The Pantry is a new recipe tool: browse a recipe library, or list what's in your fridge and see what you can cook with it.": "The Pantry es una herramienta nueva de recetas: explora una biblioteca de recetas, o anota lo que hay en tu refrigerador y mira qué puedes cocinar con eso.",
+    "Ask it to write a recipe for you, or scan a food label or look up a product.": "Pídele que te escriba una receta, o escanea la etiqueta de un alimento o busca un producto.",
+    "Sign in to keep your pantry and saved recipes.": "Inicia sesión para guardar tu despensa y tus recetas.",
     "A proper \"page not found\"": "Una página de \"no encontrada\" de verdad",
     "A mistyped or old link now shows a \"Page not found\" page with buttons back to the home page, the games and the study tools, instead of a plain error or the home page.": "Un enlace mal escrito o antiguo ahora muestra una página de \"Página no encontrada\" con botones para volver a la página de inicio, los juegos y las herramientas de estudio, en vez de un error sin más o la página de inicio.",
     "It shows the address you tried, and has a button to tell us about the broken link.": "Muestra la dirección que intentaste abrir y tiene un botón para avisarnos del enlace roto.",
