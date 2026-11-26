@@ -1,0 +1,162 @@
+{
+ "final": {
+  "state": "play",
+  "job": "yard",
+  "frac": 0.4028369137057259,
+  "t": 58.53333333333257,
+  "clear": 0.8333333333333334,
+  "incoming": false,
+  "q": "low"
+ },
+ "notes": [
+  {
+   "t": 0,
+   "words": 14,
+   "buttons": 3,
+   "text": [
+    "Crew",
+    "The storm has gone. The water has not.",
+    "Play",
+    "How to play",
+    "Settings"
+   ],
+   "frac": null
+  },
+  {
+   "t": 10,
+   "words": 10,
+   "buttons": 2,
+   "text": [
+    "100%",
+    "Click to rake the leaves off the drain",
+    "Rake"
+   ],
+   "frac": 1
+  },
+  {
+   "t": 20,
+   "words": 16,
+   "buttons": 2,
+   "text": [
+    "90%",
+    "Still filling",
+    "Water is still pouring in. Follow the copper pipe to its tap",
+    "Rake"
+   ],
+   "frac": 0.9
+  },
+  {
+   "t": 30,
+   "words": 16,
+   "buttons": 2,
+   "text": [
+    "83%",
+    "Still filling",
+    "Water is still pouring in. Follow the copper pipe to its tap",
+    "Rake"
+   ],
+   "frac": 0.83
+  },
+  {
+   "t": 40,
+   "words": 10,
+   "buttons": 2,
+   "text": [
+    "75%",
+    "Still filling",
+    "Hold E to shut the tap",
+    "Rake"
+   ],
+   "frac": 0.75
+  },
+  {
+   "t": 50,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "69%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.69
+  },
+  {
+   "t": 60,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "63%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.63
+  },
+  {
+   "t": 70,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "59%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.59
+  },
+  {
+   "t": 80,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "55%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.55
+  },
+  {
+   "t": 90,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "52%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.52
+  },
+  {
+   "t": 100,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "48%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.48
+  },
+  {
+   "t": 110,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "44%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.44
+  },
+  {
+   "t": 120,
+   "words": 11,
+   "buttons": 2,
+   "text": [
+    "41%",
+    "Keep the drain clear until the yard is dry",
+    "Rake"
+   ],
+   "frac": 0.41
+  }
+ ],
+ "errs": []
+}
