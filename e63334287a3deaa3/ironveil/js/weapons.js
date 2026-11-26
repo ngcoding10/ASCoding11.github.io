@@ -491,9 +491,20 @@
     e.takedown();
     IV.audio && IV.audio.play('takedown');
     IV.ai.noise(P.pos.x, P.pos.z, T.noise.takedown, 'step', P);
+    const lookAt = new THREE.Vector3();
     P.cine = function (dt) {
       t += dt; const k = Math.min(1, t / 0.25);
       P.pos.x = sx + (tx - sx) * k; P.pos.z = sz + (tz - sz) * k; P.pos.y = W.groundAt(P.pos.x, P.pos.z, P.pos.y);
+      // first person: the view follows him down (his upper chest, as he slumps and falls), so the guard and the knife hand
+      // stay in view for the whole move; real time, no slow motion, and the view is yours again the moment it ends
+      if (IV.camera && IV.camera.mode === 'first') {
+        const hb = e.actor && e.actor.bone && e.actor.bone('Head');
+        if (hb) { hb.getWorldPosition(lookAt); lookAt.y -= 0.3; } else lookAt.set(e.pos.x, e.pos.y + 1.0, e.pos.z);
+        const dx = lookAt.x - P.pos.x, dz = lookAt.z - P.pos.z, dh = Math.max(0.3, Math.hypot(dx, dz));
+        const wantP = IV.clamp(Math.atan2(lookAt.y - P.eyeY(), dh), -1.1, 0.1);
+        P.pitch = IV.damp(P.pitch, wantP, 7, dt);
+        P.yaw = IV.dampA(P.yaw, IV.yawTo(dx, dz), 7, dt);
+      }
       if (t > (IVChars.standin ? 1.3 : 2.6)) { P.cine = null; P.frozen = false; P.cineClip = false; P.actor.play(P.stance === 'crouch' ? 'crouchIdle' : 'idle', { fade: 0.25 }); }
     };
     IV.emit('takedown', e);

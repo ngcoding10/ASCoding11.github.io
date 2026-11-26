@@ -55,7 +55,7 @@
       // fingers stacked together round the front, index straight along the frame, thumb round onto the left side
       grip: { side: 'r', anchor: [0, 0.086, -0.012], at: [-0.0175, -0.061, -0.020], fwd: [0, -0.305, 0.952], back: [-1, 0, 0],
         forearmGun: [-0.25, -0.5, -0.83], thumbGun: [[0.75, 0.25, 0.25], [0.45, 0.1, 0.89], [0.12, 0.02, 0.99]], nailGun: [0.5, 0.8, 0], towardGun: [-1, 0, 0],
-        pose: { cup: 0.35, radial: 10, fingers: { index: { curl: [0.12, 0.06, 0.04], spread: -0.32, fixed: true }, middle: F4([0.6, 0.6, 0.3], 0.0), ring: F4([0.6, 0.6, 0.3], 0.05), little: F4([0.6, 0.6, 0.3], 0.1) }, thumb: { close: true }, sleeve: 0.25 } },
+        pose: { cup: 0.35, radial: 10, fingers: { index: { curl: [0.12, 0.06, 0.04], spread: -0.32, fixed: true }, middle: F4([0.6, 0.6, 0.3], 0.0), ring: F4([0.6, 0.6, 0.3], 0.05), little: F4([0.6, 0.6, 0.3], 0.1) }, thumb: { close: true }, sleeve: 0.6 } },
       gripPress: { like: 'grip', index: { curl: [0.42, 1.0, 0.45], spread: -0.12, fixed: true } },
       // support hand under the fore-end: palm under, fingers up the far side, thumb along the near side
       fore: { side: 'l', anchor: [0, 0.058, -0.0145], at: [0.0125,  -0.0136,  0.2444], fwd: [-0.55, -0.45, 0.7], back: [0.7, -0.7, 0],
@@ -75,7 +75,7 @@
       base: 'cup',
       grip: { side: 'r', anchor: [0, 0.086, -0.012], at: [-0.0165, -0.042, -0.006], fwd: [0, -0.17, 0.985], back: [-1, 0, 0],
         forearmGun: [-0.2, -0.55, -0.8], thumbGun: [[0.75, 0.3, 0.2], [0.45, 0.12, 0.88], [0.12, 0.03, 0.99]], nailGun: [0.5, 0.8, 0], towardGun: [-1, 0, 0],
-        pose: { cup: 0.35, radial: 10, fingers: { index: { curl: [0.1, 0.05, 0.03], spread: -0.3, fixed: true }, middle: F4([0.6, 0.6, 0.3], 0.0), ring: F4([0.6, 0.6, 0.3], 0.05), little: F4([0.6, 0.6, 0.3], 0.1) }, thumb: { close: true }, sleeve: 0.25 } },
+        pose: { cup: 0.35, radial: 10, fingers: { index: { curl: [0.1, 0.05, 0.03], spread: -0.3, fixed: true }, middle: F4([0.6, 0.6, 0.3], 0.0), ring: F4([0.6, 0.6, 0.3], 0.05), little: F4([0.6, 0.6, 0.3], 0.1) }, thumb: { close: true }, sleeve: 0.6 } },
       gripPress: { like: 'grip', index: { curl: [0.38, 1.05, 0.5], spread: -0.1, fixed: true } },
       // two-hand hold: the support palm on the grip's near side over the firing fingers, its fingers round the front, thumb forward under the slide
       cup: { side: 'l', anchor: [0, 0.05, -0.014], at: [0.0367,  -0.0716,  -0.0338], fwd: [0, -0.35, 0.94], back: [1, -0.15, 0], solveWith: ['grip'],
@@ -94,7 +94,7 @@
       // round the wrist of the stock: palm on its right side, fingers under it, thumb over the top
       grip: { side: 'r', anchor: [0, 0.086, -0.012], at: [-0.0175, -0.048, -0.038], fwd: [0, -0.5, 0.87], back: [-1, 0, 0],   // fingers round the wrist, angled forward so the wrist sits low and behind (it used to rise toward the eye); all fingers 0.6-1.4 mm from the wood
         forearmGun: [-0.4, -0.6, -0.7], thumbGun: [[0.7, 0.55, 0.45], [0.7, 0.0, 0.7], [0.3, -0.2, 0.93]], nailGun: [0.3, 0.9, 0], towardGun: [-1, -0.3, 0],
-        pose: { cup: 0.5, radial: 10, fingers: { index: { curl: [0.1, 0.08, 0.04], spread: -0.4, fixed: true }, middle: F4([0.15, 0.15, 0.1], 0.0), ring: F4([0.15, 0.15, 0.1], 0.03), little: F4([0.15, 0.15, 0.1], 0.06) }, thumb: { close: true }, sleeve: 0.25 } },
+        pose: { cup: 0.5, radial: 10, fingers: { index: { curl: [0.1, 0.08, 0.04], spread: -0.4, fixed: true }, middle: F4([0.15, 0.15, 0.1], 0.0), ring: F4([0.15, 0.15, 0.1], 0.03), little: F4([0.15, 0.15, 0.1], 0.06) }, thumb: { close: true }, sleeve: 0.6 } },
       gripPress: { like: 'grip', index: { curl: [0.55, 1.0, 0.45], spread: -0.1, fixed: true } },
       fore: { side: 'l', anchor: [0, 0.058, -0.0145], at: [0.012,  -0.0156,  0.279], fwd: [-0.55, -0.45, 0.7], back: [0.7, -0.7, 0],
         forearmGun: [-0.1, -0.85, -0.5], thumbGun: [[0.2, 0.45, 0.85], [0.02, 0.12, 0.99], [-0.06, 0.02, 1]], nailGun: [1, 0.2, 0], towardGun: [-1, 0, 0],
@@ -121,10 +121,10 @@
     binoL: { side: 'l', object: 'binoculars', anchor: [0, 0.05, -0.014], at: [0.064, -0.010, 0.022], fwd: [-0.6, 0.8, 0], back: [0.8, 0.6, 0], forearmGun: [0.4, -0.9, -0.2],
       thumbGun: [[0, -0.6, -0.8], [-0.3, -0.5, -0.8], [-0.5, -0.3, -0.8]], nailGun: [0, -1, 0], towardGun: [0, 1, 0], pose: { cup: 0.45, fingers: OPEN, thumb: { close: true }, sleeve: 0.70 } },
     binoR: { side: 'r', object: 'binoculars', anchor: [0, 0.05, -0.014], at: [-0.064, -0.010, 0.022], fwd: [0.6, 0.8, 0], back: [-0.8, 0.6, 0], forearmGun: [-0.4, -0.9, -0.2],
-      thumbGun: [[0, -0.6, -0.8], [0.3, -0.5, -0.8], [0.5, -0.3, -0.8]], nailGun: [0, -1, 0], towardGun: [0, 1, 0], pose: { cup: 0.45, fingers: OPEN, thumb: { close: true }, sleeve: 0.55 } },
+      thumbGun: [[0, -0.6, -0.8], [0.3, -0.5, -0.8], [0.5, -0.3, -0.8]], nailGun: [0, -1, 0], towardGun: [0, 1, 0], pose: { cup: 0.45, fingers: OPEN, thumb: { close: true }, sleeve: 0.7 } },
     // the knife in a hammer grip, blade out past the thumb
     knife: { side: 'r', object: 'knife', anchor: [0, 0.07, -0.013], at: [0.0135, -0.006, -0.07], fwd: [0, 1, 0], back: [1, 0, 0], forearmGun: [0.3, -0.5, -0.8],
-      thumbGun: [[-0.3, 0.6, 0.75], [-0.6, 0.3, 0.75], [-0.7, 0, 0.7]], nailGun: [0, 1, 0], towardGun: [1, 0, 0], pose: { cup: 0.5, fingers: OPEN, thumb: { close: true }, sleeve: 0.55 } }
+      thumbGun: [[-0.3, 0.6, 0.75], [-0.6, 0.3, 0.75], [-0.7, 0, 0.7]], nailGun: [0, 1, 0], towardGun: [1, 0, 0], pose: { cup: 0.5, fingers: OPEN, thumb: { close: true }, sleeve: 0.7 } }
   };
   // a grip written as another plus changes ('like')
   for (const k in GRIPS) for (const n in GRIPS[k]) { const g = GRIPS[k][n]; if (g.like) { const b = GRIPS[k][g.like]; const pose = Object.assign({}, b.pose, { fingers: Object.assign({}, b.pose.fingers, g.index ? { index: g.index } : {}) }); GRIPS[k][n] = Object.assign({}, b, { pose, like: g.like }); } }
@@ -184,7 +184,7 @@
     // about 17 %, pistol 10.9 %), its rear leaving through the bottom right; aimed (ads, rig units) is unchanged on screen
     smg:         { scale: 1.5, hip: { p: [0.1268, -0.0573, -0.25], r: [0.1, 0.0595, 0.03] }, ads: 0.29, sprint: { d: [0.035, -0.02, 0.02], r: [0.2, 0.62, -0.26] }, pivot: [0, 0.022, 0.07], crouch: [0.0, 0.008, 0.01], prone: [-0.01, 0.02, -0.01] },
     pistol:      { scale: 1.3, hip: { p: [0.077, -0.0535, -0.25], r: [0.02, 0.22, -0.3] }, ads: 0.46, sprint: { d: [0.035, -0.02, 0.02], r: [0.2, 0.62, -0.26] }, pivot: [0, 0.019, 0.07], crouch: [0.0, 0.008, 0.01], prone: [-0.01, 0.02, -0.01] },
-    rifleScoped: { scale: 1.7, hip: { p: [0.1292, -0.0609, -0.23], r: [0.1, 0.06, 0.15] }, ads: 0.10, sprint: { d: [0.035, -0.02, 0.02], r: [0.2, 0.62, -0.26] }, pivot: [0, 0.02, 0.07], crouch: [0.0, 0.008, 0.01], prone: [-0.01, 0.02, -0.01] }
+    rifleScoped: { scale: 1.7, hip: { p: [0.1739, -0.1076, -0.32], r: [0.1, 0.06, 0.15] }, ads: 0.10, sprint: { d: [0.035, -0.02, 0.02], r: [0.2, 0.62, -0.26] }, pivot: [0, 0.02, 0.07], crouch: [0.0, 0.008, 0.01], prone: [-0.01, 0.02, -0.01] }
   };
 
   // ------------------------------------------------------------------ timeline engine
