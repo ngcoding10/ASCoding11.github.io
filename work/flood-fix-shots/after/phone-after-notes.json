@@ -1,10 +1,10 @@
 {
  "final": {
-  "state": "result",
+  "state": "play",
   "job": "yard",
-  "frac": 0.024101930916391612,
-  "t": 115.26666666666269,
-  "clear": 1,
+  "frac": 0.30571713471271955,
+  "t": 116.16666666666264,
+  "clear": 0.7083333333333333,
   "incoming": false,
   "q": "low"
  },
@@ -40,35 +40,35 @@
    "words": 18,
    "buttons": 4,
    "text": [
-    "90%",
+    "93%",
     "Still filling",
     "Water is still pouring in. Follow the copper pipe to its tap",
     "Rake",
     "Use",
     "Jump"
    ],
-   "frac": 0.9
+   "frac": 0.93
   },
   {
    "t": 30,
    "words": 18,
    "buttons": 4,
    "text": [
-    "80%",
+    "85%",
     "Still filling",
     "Water is still pouring in. Follow the copper pipe to its tap",
     "Rake",
     "Use",
     "Jump"
    ],
-   "frac": 0.8
+   "frac": 0.85
   },
   {
    "t": 40,
    "words": 13,
    "buttons": 5,
    "text": [
-    "70%",
+    "78%",
     "Still filling",
     "Hold Do to shut the tap",
     "Rake",
@@ -76,49 +76,101 @@
     "Jump",
     "Do"
    ],
-   "frac": 0.7
+   "frac": 0.78
   },
   {
    "t": 50,
    "words": 13,
    "buttons": 4,
    "text": [
-    "58%",
+    "70%",
     "Keep the drain clear until the yard is dry",
     "Rake",
     "Use",
     "Jump"
    ],
-   "frac": 0.58
+   "frac": 0.7
   },
   {
    "t": 60,
    "words": 13,
    "buttons": 4,
    "text": [
-    "47%",
+    "65%",
     "Keep the drain clear until the yard is dry",
     "Rake",
     "Use",
     "Jump"
    ],
-   "frac": 0.47
+   "frac": 0.65
   },
   {
    "t": 70,
    "words": 13,
    "buttons": 4,
    "text": [
-    "40%",
+    "62%",
     "Keep the drain clear until the yard is dry",
     "Rake",
     "Use",
     "Jump"
    ],
-   "frac": 0.4
+   "frac": 0.62
   },
   {
    "t": 80,
+   "words": 13,
+   "buttons": 4,
+   "text": [
+    "57%",
+    "Keep the drain clear until the yard is dry",
+    "Rake",
+    "Use",
+    "Jump"
+   ],
+   "frac": 0.57
+  },
+  {
+   "t": 90,
+   "words": 13,
+   "buttons": 4,
+   "text": [
+    "50%",
+    "Keep the drain clear until the yard is dry",
+    "Rake",
+    "Use",
+    "Jump"
+   ],
+   "frac": 0.5
+  },
+  {
+   "t": 100,
+   "words": 13,
+   "buttons": 4,
+   "text": [
+    "43%",
+    "Keep the drain clear until the yard is dry",
+    "Rake",
+    "Use",
+    "Jump"
+   ],
+   "frac": 0.43
+  },
+  {
+   "t": 110,
+   "words": 13,
+   "buttons": 4,
+   "text": [
+    "36%",
+    "Keep the drain clear until the yard is dry",
+    "Rake",
+    "Use",
+    "Jump"
+   ],
+   "frac": 0.36
+  },
+  {
+   "t": 120,
    "words": 13,
    "buttons": 4,
    "text": [
@@ -129,65 +181,6 @@
     "Jump"
    ],
    "frac": 0.31
-  },
-  {
-   "t": 90,
-   "words": 13,
-   "buttons": 4,
-   "text": [
-    "23%",
-    "Keep the drain clear until the yard is dry",
-    "Rake",
-    "Use",
-    "Jump"
-   ],
-   "frac": 0.23
-  },
-  {
-   "t": 100,
-   "words": 13,
-   "buttons": 4,
-   "text": [
-    "12%",
-    "Keep the drain clear until the yard is dry",
-    "Rake",
-    "Use",
-    "Jump"
-   ],
-   "frac": 0.12
-  },
-  {
-   "t": 110,
-   "words": 13,
-   "buttons": 4,
-   "text": [
-    "6%",
-    "Keep the drain clear until the yard is dry",
-    "Rake",
-    "Use",
-    "Jump"
-   ],
-   "frac": 0.06
-  },
-  {
-   "t": 120,
-   "words": 16,
-   "buttons": 6,
-   "text": [
-    "2%",
-    "Rake",
-    "Use",
-    "Jump",
-    "Marlow Row is dry",
-    "★",
-    "Time",
-    "1:55",
-    "Pay",
-    "60 ◈",
-    "Again",
-    "Next"
-   ],
-   "frac": 0.02
   }
  ],
  "errs": []
