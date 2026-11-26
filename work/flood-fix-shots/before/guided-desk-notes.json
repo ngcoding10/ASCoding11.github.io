@@ -1,0 +1,301 @@
+{
+ "final": {
+  "state": "play",
+  "job": "yard",
+  "frac": 0.8918866836698224,
+  "clear": 0.33333333333333337,
+  "incoming": true,
+  "pl": [
+   "18.4",
+   "1.8"
+  ]
+ },
+ "notes": [
+  {
+   "t": 0,
+   "words": 36,
+   "buttons": 3,
+   "text": [
+    "Crew",
+    "The storm has gone but the water has not. Find out why each place flooded, then get it dry.",
+    "Go to the depot",
+    "How to play",
+    "Settings",
+    "Your progress saves by itself in this browser."
+   ]
+  },
+  {
+   "t": 10,
+   "words": 31,
+   "buttons": 5,
+   "text": [
+    "The Depot",
+    "0 ◈",
+    "Your depot. The job board is on the wall ahead.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 20,
+   "words": 119,
+   "buttons": 13,
+   "text": [
+    "The Depot",
+    "0 ◈",
+    "E: look at the job board",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench",
+    "Job board",
+    "Marlow Row",
+    "Back yard",
+    "★★★",
+    "Pell Street",
+    "Finish Marlow Row first",
+    "★★★",
+    "Tanners Field",
+    "Finish Pell Street first",
+    "★★★",
+    "Fenny Underpass",
+    "Finish Tanners Field first",
+    "★★★",
+    "Wharf Cellar",
+    "Finish Fenny Underpass first",
+    "★★★",
+    "Mill Lane",
+    "Finish Wharf Cellar first",
+    "★★★",
+    "Marlow Row",
+    "The back yard has been under water since the storm, and it is not going down.",
+    "Pays up to",
+    "72 ◈",
+    "Target time",
+    "5:00",
+    "Nobody has looked at it yet. Go and see what it needs; you can always come back for more gear.",
+    "Close",
+    "Take this job"
+   ]
+  },
+  {
+   "t": 30,
+   "words": 32,
+   "buttons": 5,
+   "text": [
+    "The Depot",
+    "0 ◈",
+    "Job taken: Marlow Row. Load the van when you are ready.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 40,
+   "words": 81,
+   "buttons": 10,
+   "text": [
+    "The Depot",
+    "0 ◈",
+    "E: load the van",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench",
+    "Load the van",
+    "Going to: Marlow Row. Room for 5 kinds of tool.",
+    "Rake",
+    "Pushes and pulls leaves and litter off a drain.",
+    "On the van",
+    "Bucket",
+    "Carries 30 litres at a time, for the puddles nothing else can reach.",
+    "On the van",
+    "Wrench",
+    "Tightens dripping joints.",
+    "On the van",
+    "Not yet",
+    "Drive to the job"
+   ]
+  },
+  {
+   "t": 50,
+   "words": 58,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "100%",
+    "Water is still coming in",
+    "0:02",
+    "Walk into the yard and look for where the water ought to be going.",
+    "The back yard has been under water since the storm, and it is not going down.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 60,
+   "words": 42,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "100%",
+    "Water is still coming in",
+    "0:11",
+    "Walk into the yard and look for where the water ought to be going.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 70,
+   "words": 52,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "100%",
+    "Water is still coming in",
+    "0:21",
+    "That is the drain, under the debris. Hold the rake (1) and click to push the debris off it. Push it a long way.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 80,
+   "words": 52,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "97%",
+    "Water is still coming in",
+    "0:30",
+    "A split pipe. It cannot be mended under pressure: follow the pipe along the wall to its stop tap, and hold E on it.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 90,
+   "words": 52,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "91%",
+    "Water is still coming in",
+    "0:40",
+    "A split pipe. It cannot be mended under pressure: follow the pipe along the wall to its stop tap, and hold E on it.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 100,
+   "words": 52,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "89%",
+    "Water is still coming in",
+    "0:49",
+    "A split pipe. It cannot be mended under pressure: follow the pipe along the wall to its stop tap, and hold E on it.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 110,
+   "words": 58,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "89%",
+    "Water is still coming in",
+    "0:57",
+    "Hold E: shut the stop tap",
+    "A split pipe. It cannot be mended under pressure: follow the pipe along the wall to its stop tap, and hold E on it.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  },
+  {
+   "t": 120,
+   "words": 58,
+   "buttons": 6,
+   "text": [
+    "Marlow Row",
+    "Water left",
+    "89%",
+    "Water is still coming in",
+    "1:06",
+    "Hold E: shut the stop tap",
+    "A split pipe. It cannot be mended under pressure: follow the pipe along the wall to its stop tap, and hold E on it.",
+    "Click: push debris away · Right click: pull it to you",
+    "1",
+    "Rake",
+    "2",
+    "Bucket",
+    "3",
+    "Wrench"
+   ]
+  }
+ ],
+ "errs": []
+}
