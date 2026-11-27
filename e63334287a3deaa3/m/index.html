@@ -33,6 +33,7 @@
 <script src="/e63334287a3deaa3/miles.js" defer></script>
 <script src="/e63334287a3deaa3/layout.js" defer></script>
 <script src="/e63334287a3deaa3/gamesearch.js" defer></script>
+<script src="/e63334287a3deaa3/door.js" defer></script> <!-- the secret door to the admin page (see door.js) -->
 <style>
 /* The phone version of the Back Room: every game as a tile, opened full screen with a bar to come back.
    It can be added to the home screen, where it runs like an app. */
@@ -68,12 +69,19 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-b);
 body{padding:calc(18px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px))}
 .wrap{max-width:760px;margin:0 auto}
 header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:0 12px;margin-bottom:18px}
-/* the title takes the room left of the Main site link, and the Turkey Week switch gets a line of its own under them (no height while it is hidden) */
-header>div:first-child{flex:1 1 0;min-width:0}
+/* the title takes the room left of the theme, language and Main site buttons (.hbtns), but never less than 264px, enough
+   for "ASCoding" on a line and the count line in at most two lines; where that room isn't there (a phone held upright)
+   the title gets a line of its own and the buttons go on the next line, under it on the left, wrapping if even they
+   don't fit on one line (their margin-top only shows then: next to the title, the title is taller).
+   The Turkey Week switch gets a line of its own under them (no height while it is hidden) */
+header>div:first-child{flex:1 1 0;min-width:min(100%,264px)}
+header>.hbtns{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 12px;margin-top:12px}
 header>.tkrow{flex:0 0 100%;order:1}
 header>[data-school]{flex:0 0 100%;order:2;max-width:none}
 h1{font-family:var(--f-d);font-weight:800;font-size:44px;line-height:.9;letter-spacing:.01em;margin:0;text-transform:uppercase}
 h1 span{color:var(--accent)}
+/* the "ASC" of ASCoding: the phone page's secret door (door.js); same colour as the rest, with a bigger invisible tap area */
+h1 [data-door]{color:inherit;padding:12px 10px;margin:-12px -10px;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 .count{font-family:var(--f-m);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:6px 0 0}
 .full{font-family:var(--f-m);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 12px;white-space:nowrap}
 .tip{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:18px;font-size:14px;line-height:1.45;color:var(--ink-2)}
@@ -112,8 +120,9 @@ h2{font-family:var(--f-m);font-weight:600;font-size:12px;letter-spacing:.14em;te
 .ask.ask-sm{margin-top:14px;padding:10px 12px;gap:10px;border-color:rgba(183,168,255,.45);background:linear-gradient(115deg,rgba(183,168,255,.13),rgba(183,168,255,.04))}
 .ask.ask-sm p{font-size:13px}
 .ask.ask-sm button{flex:0 0 auto;min-height:40px;padding:6px 16px;font-size:14px;background:#b7a8ff}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-@media (min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* --ev-max: the most tiles across; layout.js (Even rows) picks how many each row uses and which tiles are wide so every row is full */
+.grid{--ev-max:2;display:grid;grid-template-columns:repeat(var(--ev-max),minmax(0,1fr));gap:12px}
+@media (min-width:600px){.grid{--ev-max:3}}
 .tile{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;color:inherit;text-decoration:none;font:inherit;text-align:left;padding:0;cursor:pointer;transition:transform .12s}
 .tile:active{transform:scale(.97)}
 .tile img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;background:#0d0b1c}
@@ -145,12 +154,15 @@ body .pty h2{font-family:var(--f-d);font-weight:800;font-size:30px;letter-spacin
 <div class="wrap" id="home">
   <header data-cosmetics-slot>
     <div>
-      <h1>Arjun's <span>games</span></h1>
+      <h1><span data-door>ASC</span>oding <span>games</span></h1>
       <p class="count" id="count"></p>
     </div>
-    <div data-theme-switch></div> <!-- Auto / Light / Dark (theme.js fills it in) -->
-    <div data-lang-toggle></div> <!-- English / Español (lang.js fills it in) -->
-    <a class="full" href="/" target="_top">Main site</a>
+    <!-- The buttons, kept together: right of the title when there is room, else on a line of their own under it -->
+    <div class="hbtns">
+      <div data-theme-switch></div> <!-- Auto / Light / Dark (theme.js fills it in) -->
+      <div data-lang-toggle></div> <!-- English / Español (lang.js fills it in) -->
+      <a class="full" href="/" target="_top">Main site</a>
+    </div>
     <!-- The one Turkey Week switch for every game (events.js fills it in and shows it only during the event; see README). It is inside the header so the panels other scripts add under the header come after it. -->
     <div class="tkrow"><button type="button" data-turkey-switch hidden></button></div>
     <!-- Your school (school.js fills it in; see README). Inside the header too, so the panels added under the header come after it. -->
@@ -159,12 +171,12 @@ body .pty h2{font-family:var(--f-d);font-weight:800;font-size:30px;letter-spacin
   <div class="tip" id="tip" hidden><span id="tipText"></span><button type="button" id="tipX" aria-label="Hide tip">×</button></div>
   <button class="cont" id="cont" type="button" hidden></button>
   <div id="lists"></div>
-  <footer>Every game works with touch: sticks, buttons and drag to look appear when you play. <br>© 2026 Arjun · <a href="/privacy.html" target="_blank" rel="noopener">Privacy policy</a></footer>
+  <footer>Every game works with touch: sticks, buttons and drag to look appear when you play. <br>© 2026 ASCoding · <a href="/privacy.html" target="_blank" rel="noopener">Privacy policy</a></footer>
 </div>
 
 <div id="play" hidden>
   <div id="bar"><button id="back" type="button">‹ Games</button><span id="name"></span><span id="turn">Turn sideways ↻</span></div>
-  <iframe id="frame" title="Game" allow="fullscreen; autoplay; gamepad; clipboard-write" allowfullscreen></iframe>
+  <iframe id="frame" title="Game" allow="fullscreen; autoplay; gamepad; clipboard-write; web-share" allowfullscreen></iframe>
 </div>
 
 <script>
@@ -184,7 +196,7 @@ body .pty h2{font-family:var(--f-d);font-weight:800;font-size:30px;letter-spacin
       ['slipstream','Slipstream','22-car open-wheel races. Draft, brake late, pass.',1],
       ['boostball','Boostball','Rocket-car soccer with a giant ball.',1],
       ['rampline','Rampline','Stunt time trials, online boards and a track builder.',1],
-      ['flipline','Chromeline','Neon stunt bike: hold to ride, flip with the arrows, loop the loops.',1],
+      ['flipline','Chromeline','Neon stunt bike, one button: hold to ride, hold in the air to flip.',1],
       ['rumble-karts','Rumble Karts','Three-minute kart brawls with weapons.',1]
     ],'cars'],
     ['Shoot, build and outlast',[
@@ -354,6 +366,9 @@ body .pty h2{font-family:var(--f-d);font-weight:800;font-size:30px;letter-spacin
   // An invite link (#<room>) opens its game straight away. Room codes start with the game's prefix; any other code is a Rumble Karts room.
   var PREFIX={tv:'trivium',br:'backrooms-1v1',sc:'shell-crackers',hm:'hail-mary',cl:'coil',ss:'slipstream',bb:'boostball',qy:'quarry',kw:'kartwheel',sd:'showdown',cf:'chromaflage',tw:'spire',up:'updraft',ph:'odd-one-out',ko:'tumble-trials',dw:'deepword',sr:'turbo-trail',er:'escapade',pf:'puffer-party',dz:'drop-zone',gd:'lunge-line',bs:'blockstorm',lh:'lanternhold',hp:'hush-pools',vq:'sky-duel',qg:'putterby'};
   // Party invites (#pt-<code>) don't open a game: they join the party in the Party panel below. Aisle invites (#xj-) open the Aisle window (aisles.js).
+  // A typed game address (ascoding11.com/slipstream) opened on a phone arrives here from the home page as #play=<folder>.
+  var typedGame=/^#play=([a-z0-9-]{1,40})$/.exec(location.hash);
+  if(typedGame){history.replaceState(null,'',location.pathname);var tg=byId[typedGame[1]];if(tg)openGame({id:tg.id,name:tg.name,land:tg.land,url:tg.url,scope:tg.scope})}
   var inv=/^#([a-z0-9-]{1,20})$/.exec(location.hash),party='';
   if(inv){
     history.replaceState(null,'',location.pathname);
@@ -380,6 +395,8 @@ body .pty h2{font-family:var(--f-d);font-weight:800;font-size:30px;letter-spacin
   // Avis miles (avismiles.js): the claim dialog, opened from the Online panel or #avis-miles.
   var avm=document.createElement('script');avm.src=B+'avismiles.js';document.body.appendChild(avm);
   var pn=document.createElement('script');pn.src=B+'playingnow.js';document.body.appendChild(pn);
+  var cl=document.createElement('script');cl.src=B+'climb.js';document.body.appendChild(cl); // Fastest climbing Aisles today (climb.js)
+  var ht=document.createElement('script');ht.src=B+'hot.js';document.body.appendChild(ht); // Hot right now (hot.js)
   // Your school (school.js): fills in the [data-school] box under the header.
   var sk=document.createElement('script');sk.src=B+'school.js';document.body.appendChild(sk);
 
