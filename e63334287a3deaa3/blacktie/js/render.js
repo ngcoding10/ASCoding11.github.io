@@ -94,15 +94,50 @@
     '}'
   ].join('\n');
 
+  // ---- clouds (after Saltline's sky): value noise read from a small random texture (hardware filtering does the
+  // smoothing), warped fbm for rolling cumulus, lit by the density gradient toward the sun (shaded undersides,
+  // bright rims), fading into the horizon colour with distance; Low skips the relief step and uses fewer octaves
+  function noiseTex() {
+    var N = 256, d = new Uint8Array(N * N * 4), s = 2654435769 >>> 0;
+    function rnd() { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }
+    for (var i = 0; i < N * N; i++) { d[i * 4] = rnd() * 256; d[i * 4 + 1] = rnd() * 256; d[i * 4 + 2] = rnd() * 256; d[i * 4 + 3] = 255; }
+    var t = new T.DataTexture(d, N, N, T.RGBAFormat); t.wrapS = t.wrapT = T.RepeatWrapping; t.magFilter = T.LinearFilter; t.minFilter = T.LinearFilter; t.needsUpdate = true;
+    return t;
+  }
+  function CLOUDS_GLSL(low) {
+    return [
+      'uniform sampler2D tNoise; uniform float uTime; uniform float uCloud; uniform vec3 uCloudLit; uniform vec3 uCloudShade;',
+      'float cn2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return texture2D(tNoise, (i + f + 0.5) / 256.0).r; }',
+      'float cfbm(vec2 p, int o){ float a = 0.5, s = 0.0, t = 0.0; for (int i = 0; i < 5; i++){ if (i >= o) break; s += a * cn2(p); t += a; p = mat2(1.6, 1.2, -1.2, 1.6) * p + 17.3; a *= 0.5; } return s / t; }',
+      'vec3 clouds(vec3 d, vec3 sky){',
+      '  if (d.y <= 0.0 || uCloud <= 0.0) return sky;',
+      '  float h = d.y; vec2 q = d.xz / (h + 0.12) * 0.55 + vec2(0.006, 0.002) * uTime;',
+      '  float warp = cfbm(q * 0.5 + 7.1, 3);',
+      '  vec2 qq = q + (warp - 0.5) * 1.2;',
+      '  float dens = cfbm(qq, ' + (low ? 3 : 5) + ');',
+      '  float cov = smoothstep(1.02 - uCloud, 1.22 - uCloud, dens + 0.18) * smoothstep(0.0, 0.10, h);',
+      '  if (cov <= 0.001) return sky;',
+      low ? '  float relief = 0.6;'
+          : '  float densS = cfbm(qq + normalize(uSunDir.xz + 1e-4) * 0.18, 4); float relief = clamp((dens - densS) * 4.0 + 0.55, 0.0, 1.0);',
+      '  float s = max(dot(d, uSunDir), 0.0);',
+      '  vec3 col = mix(uCloudShade, uCloudLit, relief);',
+      '  col += uSunCol * (1.0 - cov) * cov * 2.5 * (0.3 + 1.7 * pow(s, 6.0));',   // bright rims where the cloud thins, strongest toward the sun
+      '  col = mix(col, sky, exp(-h * 9.0) * 0.6);',                             // aerial perspective
+      '  return mix(sky, col, cov * 0.92);',
+      '}'
+    ].join('\n');
+  }
   function buildSky() {
     R.skyU = {
       uSunDir: { value: R.sunDir.clone() }, uZenith: { value: new T.Color() }, uHorizon: { value: new T.Color() },
-      uSunCol: { value: new T.Color() }, uGround: { value: new T.Color() }, uHaze: { value: 1 }
+      uSunCol: { value: new T.Color() }, uGround: { value: new T.Color() }, uHaze: { value: 1 },
+      tNoise: { value: noiseTex() }, uCloud: { value: 0.35 }, uCloudLit: { value: new T.Color(1, 1, 1) }, uCloudShade: { value: new T.Color(0.5, 0.55, 0.62) }
     };
+    R.skyU.uTime = RP.windU || { value: 0 };
     var mat = new T.ShaderMaterial({
       uniforms: R.skyU, side: T.BackSide, depthWrite: false, fog: false, toneMapped: true,
       vertexShader: 'varying vec3 vD; void main(){ vD = normalize(position); vec4 p = modelViewMatrix*vec4(position,1.0); gl_Position = projectionMatrix*p; gl_Position.z = gl_Position.w*0.99999; }',
-      fragmentShader: R.SKY_GLSL + '\nvarying vec3 vD;\nvoid main(){ gl_FragColor = vec4(skyCol(normalize(vD)), 1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}'
+      fragmentShader: R.SKY_GLSL + '\n' + CLOUDS_GLSL(R.qname === 'low') + '\nvarying vec3 vD;\nvoid main(){ vec3 d = normalize(vD); gl_FragColor = vec4(clouds(d, skyCol(d)), 1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}'
     });
     var g = new T.SphereGeometry(1, 32, 16);
     R.sky = new T.Mesh(g, mat);
@@ -113,17 +148,17 @@
   // atmosphere presets: colours authored in sRGB
   R.ATMOS = {
     afternoon: { sun: [0.55, 0.42, 0.62], sunCol: '#fff0d6', sunI: 2.6, zenith: '#3f7fd1', horizon: '#cfe0ee', ground: '#6d7b86',
-      hemiSky: '#d2e0f5', hemiGround: '#b89b78', hemiI: 0.95, fog: '#c3d3e2', fogD: 0.0017, haze: 1, exposure: 0.82,
+      hemiSky: '#d2e0f5', hemiGround: '#b89b78', hemiI: 0.95, fog: '#c3d3e2', fogD: 0.0017, haze: 1, exposure: 0.82, cloud: 0.4, cloudLit: 1.15,
       grade: { sat: 1.14, warm: 0.04, cool: 0.04, lift: 0.008, contrast: 1.08 } },
     golden: { sun: [-0.62, 0.2, 0.56], sunCol: '#ffc98e', sunI: 2.5, zenith: '#4a78bf', horizon: '#f3d2ad', ground: '#6b6058',
-      hemiSky: '#d6dbe8', hemiGround: '#c29a72', hemiI: 0.95, fog: '#e9cfb2', fogD: 0.0022, haze: 1.5, exposure: 1.02,
+      hemiSky: '#d6dbe8', hemiGround: '#c29a72', hemiI: 0.95, fog: '#e9cfb2', fogD: 0.0022, haze: 1.5, exposure: 1.02, cloud: 0.45, cloudLit: 1.1,
       grade: { sat: 1.12, warm: 0.08, cool: 0.05, lift: 0.015, contrast: 1.06 } },
     // dusk: the sun is just above the sea in the west, most of the town is in the hills' shadow, so the sky does the
     // lighting: a strong lavender-to-peach fill from above, warm bounce from below, lamps and windows carry the rest
     // (the sky fill was lilac and the fog pink: on Low, with no grade, phones showed everything mauve; now a cooler
     // blue-grey fill under the warm sun, as dusk light reads in photographs)
     dusk: { sun: [-0.74, 0.17, 0.44], sunCol: '#ffb27c', sunI: 2.4, zenith: '#34508f', horizon: '#f2b088', ground: '#54504b',
-      hemiSky: '#aab6d2', hemiGround: '#b28866', hemiI: 1.6, fog: '#c2ad9c', fogD: 0.0019, haze: 2, exposure: 1.38,
+      hemiSky: '#aab6d2', hemiGround: '#b28866', hemiI: 1.6, fog: '#c2ad9c', fogD: 0.0019, haze: 2, exposure: 1.38, cloud: 0.42, cloudLit: 1.0,
       grade: { sat: 1.12, warm: 0.07, cool: 0.07, lift: 0.022, contrast: 1.04 } }
   };
 
@@ -134,6 +169,10 @@
     u.uSunDir.value.copy(R.sunDir);
     u.uZenith.value.copy(RP.col(a.zenith)); u.uHorizon.value.copy(RP.col(a.horizon));
     u.uSunCol.value.copy(RP.col(a.sunCol)); u.uGround.value.copy(RP.col(a.ground)); u.uHaze.value = a.haze;
+    // clouds: lit by the sun's colour, shaded toward the zenith's; a little cover in the afternoon, more at golden hour
+    u.uCloud.value = a.cloud != null ? a.cloud : 0.35;
+    u.uCloudLit.value.copy(RP.col(a.sunCol)).multiplyScalar(a.cloudLit || 1.05);
+    u.uCloudShade.value.copy(RP.col(a.zenith)).lerp(RP.col(a.horizon), 0.5).multiplyScalar(0.82);
     R.sun.color.copy(RP.col(a.sunCol)); R.sun.intensity = a.sunI;
     R.hemi.color.copy(RP.col(a.hemiSky)); R.hemi.groundColor.copy(RP.col(a.hemiGround)); R.hemi.intensity = a.hemiI;
     R.fog.color.copy(RP.col(a.fog)); R.fog.density = a.fogD;
