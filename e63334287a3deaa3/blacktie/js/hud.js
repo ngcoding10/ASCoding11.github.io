@@ -129,7 +129,9 @@
     var spread = d.spread ? M.lerp(d.spread[0], d.spread[1], p.aimW) + p.bloom + Math.min(1.5, p.speed * 0.35) * (1 - p.aimW * 0.6) : 1;
     var gap = Math.max(3, spread / RP.Cam.fov * window.innerHeight * 0.9);
     e.cross.style.setProperty('--gap', gap.toFixed(1) + 'px');
-    e.cross.className = (showX ? 'on' : '') + (d.melee || !showX ? ' dot' : '') + (H.overEnemy ? ' enemy' : '') + (RP.Cam.lock ? ' lock' : '') + (H.blocked && showX ? ' blocked' : '');
+    // with a gun out there is always a small dot to steer by (sprinting too); the spread cross opens when aiming or firing
+    var armed = !d.melee && !d.unarmed && d.cat !== 'throw' && p.alive && p.state !== 'drive' && !RP.Cam.scoped;
+    e.cross.className = (showX || armed ? 'on' : '') + (d.melee || !showX ? ' dot' : '') + (H.overEnemy ? ' enemy' : '') + (RP.Cam.lock ? ' lock' : '') + (H.blocked && showX ? ' blocked' : '');
     document.body.classList.toggle('scoped', !!RP.Cam.scoped);
     // bars
     e.hp.style.width = (p.hp / RP.TUNING.maxHealth * 100).toFixed(1) + '%';

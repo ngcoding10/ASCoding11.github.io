@@ -205,7 +205,10 @@
     var sx = 0, sz = 0;
     RP.G.ents.forEach(function (o) { if (o === e || !o.alive || o.team === 'player' && e.team !== 'civ') return; var ox = e.pos.x - o.pos.x, oz = e.pos.z - o.pos.z, d2 = ox * ox + oz * oz; if (d2 < 0.9 && d2 > 1e-4) { var d = Math.sqrt(d2); sx += ox / d * (0.95 - d); sz += oz / d * (0.95 - d); } });
     var mx = dx * e.speed + sx * 2, mz = dz * e.speed + sz * 2;
+    var ox = e.pos.x, oz = e.pos.z, wasOk = W.nav && W.navOk(ox, oz);
     W.move(e.pos, mx * dt, mz * dt, e.radius, 1.7);
+    // people stay on walkable ground: a step from it onto a cliff face (strafing, closing in, being shoved) is undone
+    if (wasOk && !W.navOk(e.pos.x, e.pos.z)) { e.pos.x = ox; e.pos.z = oz; }
     var gr = W.ground(e.pos.x, e.pos.z, e.pos.y + 0.5, 0.5);
     e.pos.y = M.damp(e.pos.y, gr.y, 18, dt);
     if (faceMove && e.speed > 0.2) e.yaw = M.approachAngle(e.yaw, Math.atan2(dx, dz), 7, dt);

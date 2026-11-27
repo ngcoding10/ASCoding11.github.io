@@ -293,7 +293,10 @@
       var th = W.terrainH(x, z), g = th, wall = false;
       var l = W.near(x, z, 0.4, _nb);
       if (!l.length) {   // nothing built here: open ground or open sea
-        h[j * nx + i] = g; ok[j * nx + i] = g < W.water + 0.05 ? 0 : 1; continue;
+        // ...but not a hillside steeper than ~32 degrees: guards kept off cliff faces (where the coarser terrain drawn
+        // at a distance would show them sunk into the rock, and where nobody would walk anyway)
+        var gx = (W.terrainH(x + 1, z) - W.terrainH(x - 1, z)) / 2, gz = (W.terrainH(x, z + 1) - W.terrainH(x, z - 1)) / 2;
+        h[j * nx + i] = g; ok[j * nx + i] = g < W.water + 0.05 || gx * gx + gz * gz > 0.39 ? 0 : 1; continue;
       }
       boxy[j * nx + i] = 1;
       // stand on the highest surface reachable from the terrain (or from a box top we step onto); a bridge or pier
