@@ -171,6 +171,7 @@
     setFrom = from; showScreen('settings');
     var S = RP.settings, f = $('setForm');
     f.quality.value = R.qname; f.targeting.value = S.targeting; f.difficulty.value = S.difficulty;
+    f.keys.value = S.keys || 'classic';
     f.sens.value = S.sens; f.volume.value = S.volume; f.invertY.checked = S.invertY; f.blood.checked = S.blood; f.camShake.checked = S.camShake; f.fov.value = S.fov || 0;
     f.onchange = function (e) {
       var t = e.target;

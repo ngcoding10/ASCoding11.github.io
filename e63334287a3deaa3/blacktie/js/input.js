@@ -11,11 +11,25 @@
 (function () {
   'use strict';
   var I = RP.In = { move: { x: 0, y: 0 }, look: { x: 0, y: 0 }, wheelDelta: 0, mouseDX: 0, mouseDY: 0, locked: false, pad: false, lastDevice: 'kbm' };
-  var KEYS = {
-    KeyW: 'up', KeyS: 'down', KeyA: 'left', KeyD: 'right', ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
-    ShiftLeft: 'sprint', ShiftRight: 'sprint', Space: 'jump', ControlLeft: 'stealth', KeyC: 'stealth', KeyQ: 'cover', KeyR: 'reload', Tab: 'wheel',
-    KeyV: 'camera', KeyG: 'throw', KeyE: 'interact', KeyX: 'prev', Escape: 'pause', KeyP: 'pause', KeyF: 'enter', KeyB: 'drop', KeyT: 'melee', AltLeft: 'walk', KeyZ: 'walk'
+  // Two keyboard layouts (Settings > Keys). Classic: Shift sprints, right button aims. Trackpad (a Mac trackpad has
+  // no comfortable right-drag): Shift aims (hold), Control sprints (hold), F melee, X cover, Q previous weapon.
+  // Both: 1 long gun, 2 pistol, 3 melee weapon; E uses things and gets in and out of cars.
+  var LAYOUTS = {
+    classic: {
+      KeyW: 'up', KeyS: 'down', KeyA: 'left', KeyD: 'right', ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+      ShiftLeft: 'sprint', ShiftRight: 'sprint', Space: 'jump', ControlLeft: 'stealth', KeyC: 'stealth', KeyQ: 'cover', KeyR: 'reload', Tab: 'wheel',
+      KeyV: 'camera', KeyG: 'throw', KeyE: 'interact', KeyX: 'prev', Escape: 'pause', KeyP: 'pause', KeyF: 'enter', KeyB: 'drop', KeyT: 'melee', AltLeft: 'walk', KeyZ: 'walk',
+      Digit1: 'slot1', Digit2: 'slot2', Digit3: 'slot3'
+    },
+    trackpad: {
+      KeyW: 'up', KeyS: 'down', KeyA: 'left', KeyD: 'right', ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+      ShiftLeft: 'aim', ShiftRight: 'aim', ControlLeft: 'sprint', ControlRight: 'sprint', Space: 'jump', KeyC: 'stealth', KeyX: 'cover', KeyR: 'reload',
+      KeyE: 'interact', KeyF: 'melee', KeyG: 'throw', KeyQ: 'prev', Tab: 'wheel', KeyV: 'camera', KeyB: 'drop', Escape: 'pause', KeyP: 'pause',
+      AltLeft: 'walk', KeyZ: 'walk', Digit1: 'slot1', Digit2: 'slot2', Digit3: 'slot3'
+    }
   };
+  I.LAYOUTS = LAYOUTS;
+  function keyMap() { return LAYOUTS[RP.settings && RP.settings.keys] || LAYOUTS.classic; }
   var state = {}, prev = {}, now = {};
   function set(a, v) { state[a] = v; }
   I.down = function (a) { return !!now[a]; };
@@ -29,20 +43,25 @@
   I.init = function (canvas) {
     I.canvas = canvas;
     window.addEventListener('keydown', function (e) {
-      var a = KEYS[e.code]; if (!a) return;
+      var a = keyMap()[e.code]; if (!a) return;
       if (RP.G.paused && a !== 'pause') return;
-      if (e.code === 'Tab' || e.code === 'Space' || /Arrow/.test(e.code) || e.code === 'ControlLeft') e.preventDefault();
+      if (e.code === 'Tab' || e.code === 'Space' || /Arrow/.test(e.code) || e.code === 'ControlLeft' || e.code === 'ControlRight') e.preventDefault();
       set(a, true); I.lastDevice = 'kbm';
     });
-    window.addEventListener('keyup', function (e) { var a = KEYS[e.code]; if (a) set(a, false); });
+    window.addEventListener('keyup', function (e) { var a = keyMap()[e.code]; if (a) set(a, false); });
     window.addEventListener('blur', function () { state = {}; });
     canvas.addEventListener('mousedown', function (e) {
       if (RP.touch && e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
       if (!I.locked && !RP.G.paused && !RP.test) { canvas.requestPointerLock && canvas.requestPointerLock(); }
-      if (e.button === 0) set('fire', true); if (e.button === 2) set('aim', true); if (e.button === 1) set('camera', true);
+      // (a Mac turns Control + click into a right click: with the trackpad layout Control is sprint, so that is a shot)
+      var ctrlShot = e.button === 2 && e.ctrlKey && RP.settings && RP.settings.keys === 'trackpad';
+      if (e.button === 0 || ctrlShot) { set('fire', true); I._ctrlShot = ctrlShot; } else if (e.button === 2) set('aim', true); if (e.button === 1) set('camera', true);
       I.lastDevice = 'kbm';
     });
-    window.addEventListener('mouseup', function (e) { if (e.button === 0) set('fire', false); if (e.button === 2) set('aim', false); if (e.button === 1) set('camera', false); });
+    window.addEventListener('mouseup', function (e) {
+      if (e.button === 0 || (e.button === 2 && I._ctrlShot)) { set('fire', false); I._ctrlShot = false; } else if (e.button === 2) set('aim', false);
+      if (e.button === 1) set('camera', false);
+    });
     canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     window.addEventListener('mousemove', function (e) { if (I.locked || RP.test) { I.mouseDX += e.movementX || 0; I.mouseDY += e.movementY || 0; } });
     window.addEventListener('wheel', function (e) { I.wheelDelta += Math.sign(e.deltaY); }, { passive: true });

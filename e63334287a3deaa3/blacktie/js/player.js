@@ -129,6 +129,17 @@
     // ---- toggles
     if (I.pressed('stealth') && (p.state === 'move' || p.state === 'cover')) { p.stealth = !p.stealth; RP.emit('stealth', p.stealth); }
     if (I.pressed('prev') && !busy) equip(p, p.inv[p.prevW] ? p.prevW : 'fists');
+    // 1 long gun (pressed again: the next long gun you carry), 2 pistol, 3 melee weapon (or fists)
+    if (!busy && !p.wheelOpen) {
+      var want = null, IT = RP.Items;
+      if (I.pressed('slot1')) {
+        var longs = ['rifle', 'smg', 'shotgun', 'sniper', 'heavy'].map(function (c) { return IT.slotOf(p, c); }).filter(Boolean);
+        if (longs.length) { var at = longs.indexOf(p.cur); want = longs[(at + 1) % longs.length]; }
+      }
+      if (I.pressed('slot2')) want = IT.slotOf(p, 'pistol');
+      if (I.pressed('slot3')) want = IT.slotOf(p, 'melee') || 'fists';
+      if (want && want !== p.cur) equip(p, want);
+    }
     // ---- aim (hold); assisted lock-on handled in camera/aim
     var wantAim = I.down('aim') && !p.wheelOpen && p.state !== 'roll' && p.state !== 'vault' && p.state !== 'climb' && p.state !== 'ragdoll' && p.state !== 'getup' && p.state !== 'takedown' && !p.swap;
     if (d.melee) wantAim = wantAim && p.state === 'move';

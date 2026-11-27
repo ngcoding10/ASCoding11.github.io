@@ -178,7 +178,8 @@
   function keyName(a) {
     if (RP.In.lastDevice === 'touch') return '';
     if (RP.In.lastDevice === 'pad') return { fire: '[RT]', interact: '[Y]', cover: '[RB]', jump: '[A]' }[a] || '';
-    return { fire: '[Click]', interact: '[E]', cover: '[Q]', jump: '[Space]' }[a] || '';
+    var tp = RP.settings.keys === 'trackpad';
+    return { fire: '[Click]', interact: '[E]', cover: tp ? '[X]' : '[Q]', jump: '[Space]' }[a] || '';
   }
 
   // ------------------------------------------------------------------ minimap

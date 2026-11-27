@@ -283,6 +283,8 @@ body.touch #subs div:nth-last-child(n+3){display:none}
     <label for="sS">Look sensitivity</label><input id="sS" type="range" name="sens" min="0.3" max="2.5" step="0.05">
     <label for="sF">Field of view</label><input id="sF" type="range" name="fov" min="-8" max="14" step="1">
     <label for="sV">Volume</label><input id="sV" type="range" name="volume" min="0" max="1" step="0.05">
+    <label for="sK">Keys</label><select id="sK" name="keys"><option value="classic">Classic (Shift sprints, right button aims)</option><option value="trackpad">Trackpad (Shift aims, Control sprints)</option></select>
+    <div class="note">Trackpad: Shift aim · Control sprint · F melee · X cover · Q last weapon · E use and cars · C sneak. Both: 1 long gun, 2 pistol, 3 melee.</div>
     <label for="sI">Invert look up/down</label><input id="sI" type="checkbox" name="invertY">
     <label for="sC">Camera shake</label><input id="sC" type="checkbox" name="camShake">
     <label for="sB">Blood effects</label><input id="sB" type="checkbox" name="blood">
@@ -295,7 +297,8 @@ body.touch #subs div:nth-last-child(n+3){display:none}
   <div class="ctl">
     <kbd>W A S D</kbd><span>Move (hold Alt or Z to walk)</span>
     <kbd>Mouse</kbd><span>Look (the camera turns freely; aiming turns you)</span>
-    <kbd>Shift</kbd><span>Sprint (uses stamina; no aimed fire)</span>
+    <kbd>Shift</kbd><span>Sprint (uses stamina; no aimed fire). On a Mac trackpad, try Settings → Keys → Trackpad: Shift aims, Control sprints, F melee, X cover, Q last weapon</span>
+    <kbd>1 2 3</kbd><span>Long gun (press again for the next one) · pistol · melee weapon</span>
     <kbd>Space</kbd><span>Jump · vault low walls · climb ledges · dodge in a fist fight · roll while aiming + moving</span>
     <kbd>Left Ctrl</kbd><span>Stealth: lower, slower, quieter; takedowns from behind unaware guards</span>
     <kbd>Right mouse</kbd><span>Aim (over the shoulder; scope with the sniper rifle)</span>

@@ -65,6 +65,7 @@
     sens: 1, invertY: false, fov: 0, volume: 0.8, music: 0.4,
     blood: false,              // content toggle: off by default (hits show dust instead)
     camShake: true, subtitles: true, firstPerson: false,
+    keys: 'classic',           // keyboard layout: 'classic' (Shift sprint, right button aims) | 'trackpad' (Shift aims, Ctrl sprints)
     difficulty: 'normal'       // 'easy' | 'normal' | 'hard'
   };
   try {
