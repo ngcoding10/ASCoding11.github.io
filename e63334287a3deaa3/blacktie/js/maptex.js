@@ -535,12 +535,23 @@
         'varying vec3 vWP; varying vec4 vVC; varying vec3 vVN;',
         'float lHash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }',
         'float lNoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f); return mix(mix(lHash(i), lHash(i+vec2(1.,0.)), f.x), mix(lHash(i+vec2(0.,1.)), lHash(i+vec2(1.,1.)), f.x), f.y); }',
+        // (after Saltline) 4-tap B-spline bicubic: the 2 m data maps never show a texel edge, however close the camera
+        'vec4 lBicubic(sampler2D t, vec2 uv){ vec2 res = vec2(textureSize(t, 0)); vec2 p = uv * res - 0.5; vec2 i = floor(p); vec2 f = p - i; vec2 f2 = f * f, f3 = f2 * f;',
+        '  vec2 w0 = (1.0 - 3.0 * f + 3.0 * f2 - f3) / 6.0, w1 = (4.0 - 6.0 * f2 + 3.0 * f3) / 6.0, w2 = (1.0 + 3.0 * f + 3.0 * f2 - 3.0 * f3) / 6.0, w3 = f3 / 6.0;',
+        '  vec2 g0 = w0 + w1, g1 = w2 + w3; vec2 h0 = (i + w1 / g0 - 0.5) / res, h1 = (i + w3 / g1 + 1.5) / res;',
+        '  return (texture(t, vec2(h0.x, h0.y)) * g0.x + texture(t, vec2(h1.x, h0.y)) * g1.x) * g0.y + (texture(t, vec2(h0.x, h1.y)) * g0.x + texture(t, vec2(h1.x, h1.y)) * g1.x) * g1.y; }',
+        // (after Saltline) cellular noise: x = distance to the nearest point, y = to the second, z = the cell's own random
+        'vec3 lVor(vec2 p){ vec2 i = floor(p), f = p - i; float d1 = 9.0, d2 = 9.0, id = 0.0;',
+        '  for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) { vec2 o = vec2(float(x), float(y)); vec2 c = i + o;',
+        '    vec2 r = vec2(lHash(c), lHash(c + 17.31)); vec2 d = o + r - f; float dd = dot(d, d);',
+        '    if (dd < d1) { d2 = d1; d1 = dd; id = lHash(c + 5.7); } else if (dd < d2) d2 = dd; }',
+        '  return vec3(sqrt(d1), sqrt(d2), id); }',
         'vec3 lWN = vec3(0.0, 1.0, 0.0);'
       ].join('\n') + '\n' + sh.fragmentShader
         .replace('#include <map_fragment>', [
           'vec2 luv = (vWP.xz - uLB.xy) / uLB.zw;',
           'float inB = step(0.0, luv.x) * step(luv.x, 1.0) * step(0.0, luv.y) * step(luv.y, 1.0) * (1.0 - step(0.99, vVC.a));',   // alpha 1: a mesh that brings its own normals and tint (tunnel lids)
-          'vec4 lc = texture2D(tLandC, luv); vec3 lnn = texture2D(tLandN, luv).xyz * 2.0 - 1.0;',
+          'vec4 lc = lBicubic(tLandC, luv); vec3 lnn = lBicubic(tLandN, luv).xyz * 2.0 - 1.0;',
           'lWN = normalize(mix(normalize(vVN), lnn, inB));',
           'vec3 lTint = mix(vVC.rgb * vVC.rgb, lc.rgb, inB) * 2.0; float lVeg = mix(vVC.a > 0.99 ? 0.6 : vVC.a, lc.a, inB);',
           'float slp = 1.0 - lWN.y;',
@@ -551,18 +562,27 @@
           'float steep = smoothstep(0.26, 0.48, slp + (tri.g - 0.3) * 0.3);',
           // limestone: beds a couple of metres thick, each its own tone, a dark seam between them, ochre and grey stains
           'float sy = vWP.y * 0.4 + (tri.r - 0.3) * 2.2 + big * 3.0 + sin(vWP.x * 0.021 + vWP.z * 0.017) * 1.2;',
-          'float seam = 1.0 - smoothstep(0.0, 0.16, abs(fract(sy) - 0.5));',
+          'float seam = (1.0 - smoothstep(0.0, 0.16, abs(fract(sy) - 0.5))) * 0.35;',   // (beds kept faint: strong ones read as wood grain)
           'float bed = lHash(vec2(floor(sy + 0.5), 3.7));',
           // fine grain, triplanar like the rest (a top-down lookup smeared into streaks down the cliffs)
           'float fineD = texture2D(map, vWP.zy * 0.61).g * bw.x + texture2D(map, vWP.xz * 0.61).g * bw.y + texture2D(map, vWP.xy * 0.61).g * bw.z;',
           'vec3 rock = vec3(0.19, 0.172, 0.142) * (0.25 + 2.4 * tri) * (0.88 + 0.24 * bed) * (0.62 + 1.2 * fineD);',
           'rock *= 1.0 - 0.3 * seam * smoothstep(0.42, 0.7, slp);',
+          // limestone in fractured blocks (on the face's own plane): ~1.6 m blocks with dark cracks between them, a
+          // finer set of cracks inside each, and every block its own shade
+          'vec2 pc = abs(lWN.x) > abs(lWN.z) ? vWP.zy : vWP.xy; pc.x *= 0.55; pc.y *= 1.5;',   // (blocks wider than tall: bedding)
+          'vec3 vb = lVor(pc * 0.62 + vec2(big * 0.8, (tri.g - 0.3) * 0.6));',
+          // only some joints show, and not along their whole length
+          'float jv = smoothstep(0.35, 0.75, lNoise(pc * 0.45 + 3.1) * 0.7 + lNoise(pc * 1.7) * 0.3);',
+          'float crack = mix(1.0, smoothstep(0.0, 0.06, vb.y - vb.x), jv);',
+          LOW ? 'float crack2 = 1.0;' : 'vec3 vs = lVor(pc * 2.1 + 9.3); float crack2 = mix(1.0, smoothstep(0.0, 0.05, vs.y - vs.x), 0.6);',
+          'rock *= (0.86 + 0.28 * vb.z) * mix(0.6, 1.0, crack) * mix(1.0, crack2, jv);',
           // close up: a third, finer octave (60 cm) so a cliff you stand against has grit and pits, not a blur
           'float camD = length(vWP - cameraPosition), nearK = 1.0 - smoothstep(6.0, 30.0, camD);',
           LOW ? '' : 'float det = texture2D(map, vWP.zy * 1.7).b * bw.x + texture2D(map, vWP.xz * 1.7).b * bw.y + texture2D(map, vWP.xy * 1.7).b * bw.z;',
           LOW ? '' : 'rock *= 1.0 + clamp((det - 0.58) * 2.6, -0.35, 0.35) * nearK;',
           'float streak = lNoise(vec2(dot(vWP.xz, vec2(0.8, 0.6)) * 0.33, vWP.y * 0.035 + 3.0));',
-          'rock = mix(rock, rock * vec3(0.48, 0.45, 0.42), smoothstep(0.5, 0.8, streak) * 0.7);',
+          'rock = mix(rock, rock * vec3(0.48, 0.45, 0.42), smoothstep(0.5, 0.8, streak) * 0.35);',
           'rock = mix(rock, rock * vec3(1.25, 0.96, 0.66), smoothstep(0.55, 0.9, lNoise(vWP.xz * 0.043 + vWP.y * 0.09)) * 0.6);',
           // the ground between the crags: bare earth and scree where little grows, macchia and dry grass elsewhere
           'vec3 sc = texture2D(tScrub, vWP.xz * 0.19).rgb; float pat = lNoise(vWP.xz * 0.13 + 2.0);',
@@ -585,7 +605,7 @@
           'normal = normalize((viewMatrix * vec4(lwn, 0.0)).xyz);'
         ].join('\n'));
     };
-    land.customProgramCacheKey = function () { return 'land3' + (LOW ? 'l' : ''); };
+    land.customProgramCacheKey = function () { return 'land4' + (LOW ? 'l' : ''); };
     RP.mat.land = land;
   };
 

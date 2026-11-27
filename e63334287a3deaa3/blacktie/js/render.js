@@ -12,10 +12,10 @@
   var T = THREE, M = RP.M;
 
   var Q = RP.QUALITY = {
-    //          pixel ratio cap, canvas AA, shadow map, post, msaa, ssao, bloom, sea detail, draw distance, char LOD (mid, far), foliage density
-    low:    { pr: 0.85, aa: false, shadow: 0,    post: false, msaa: 0, ssao: false, sea: 0, far: 420, lod: [8, 22],  fol: 0.45, decals: 40,  particles: 0.5 },
-    medium: { pr: 1.0,  aa: true,  shadow: 1024, post: true,  msaa: 0, ssao: false, sea: 1, far: 650, lod: [10, 28], fol: 0.75, decals: 90,  particles: 0.8 },
-    high:   { pr: 1.5,  aa: true,  shadow: 2048, post: true,  msaa: 4, ssao: true,  sea: 2, far: 900, lod: [14, 40], fol: 1.0,  decals: 160, particles: 1 }
+    //          (pr: unused, kept for older saves), px: pixel budget per frame, canvas AA, shadow map, post, msaa, ssao, bloom, sea detail, draw distance, char LOD (mid, far), foliage density
+    low:    { pr: 0.85, px: 1.3e6, aa: false, shadow: 0,    post: false, msaa: 0, ssao: false, sea: 0, far: 420, lod: [8, 22],  fol: 0.45, decals: 40,  particles: 0.5 },
+    medium: { pr: 1.0,  px: 2.1e6, aa: true,  shadow: 1024, post: true,  msaa: 0, ssao: false, sea: 1, far: 650, lod: [10, 28], fol: 0.75, decals: 90,  particles: 0.8 },
+    high:   { pr: 1.5,  px: 3.2e6, aa: true,  shadow: 2048, post: true,  msaa: 4, ssao: true,  sea: 2, far: 900, lod: [14, 40], fol: 1.0,  decals: 160, particles: 1 }
   };
 
   var R = RP.R = { q: null, qname: null, sunDir: new T.Vector3(0.4, 0.6, 0.6).normalize(), atmos: null, frame: 0, stats: { calls: 0, tris: 0 } };
@@ -27,7 +27,7 @@
     if (!Q[name]) name = RP.touch ? 'low' : 'medium';
     R.qname = name; R.q = Q[name];
     var r = R.renderer = new T.WebGLRenderer({ canvas: canvas, antialias: R.q.aa, powerPreference: 'high-performance', stencil: false, preserveDrawingBuffer: !!RP.test });
-    r.setPixelRatio(Math.min(window.devicePixelRatio || 1, R.q.pr));
+    r.setPixelRatio(R.pixelRatio());
     r.outputEncoding = T.sRGBEncoding;
     r.toneMapping = T.ACESFilmicToneMapping;
     r.toneMappingExposure = 1.0;
@@ -62,8 +62,18 @@
     location.reload();
   };
 
+  // Resolution by a pixel budget (as Saltline does): the screen's own density up to 2, then scaled down only as far as
+  // the preset's budget needs (px: pixels per frame). A phone renders sharp instead of at a fixed 0.85 CSS pixels (a
+  // third of a retina screen's resolution); a big desktop screen on Low still comes down to about what it was.
+  // ../autores.js multiplies whatever this sets if frames get slow.
+  R.pixelRatio = function () {
+    var w = window.innerWidth, h = window.innerHeight, pr = Math.min(window.devicePixelRatio || 1, 2), px = w * h * pr * pr;
+    if (px > R.q.px) pr *= Math.sqrt(R.q.px / px);
+    return Math.max(0.5, pr);
+  };
   R.resize = function () {
     var w = window.innerWidth, h = window.innerHeight;
+    R.renderer.setPixelRatio(R.pixelRatio());
     R.renderer.setSize(w, h, false);
     R.camera.aspect = w / h; R.camera.updateProjectionMatrix();
     if (R.post) R.post.size();
@@ -110,8 +120,10 @@
       grade: { sat: 1.12, warm: 0.08, cool: 0.05, lift: 0.015, contrast: 1.06 } },
     // dusk: the sun is just above the sea in the west, most of the town is in the hills' shadow, so the sky does the
     // lighting: a strong lavender-to-peach fill from above, warm bounce from below, lamps and windows carry the rest
-    dusk: { sun: [-0.74, 0.17, 0.44], sunCol: '#ffb27c', sunI: 2.3, zenith: '#34508f', horizon: '#f4ad82', ground: '#5a4c52',
-      hemiSky: '#c3c0e6', hemiGround: '#b98a66', hemiI: 1.75, fog: '#c7a9a2', fogD: 0.0019, haze: 2, exposure: 1.42,
+    // (the sky fill was lilac and the fog pink: on Low, with no grade, phones showed everything mauve; now a cooler
+    // blue-grey fill under the warm sun, as dusk light reads in photographs)
+    dusk: { sun: [-0.74, 0.17, 0.44], sunCol: '#ffb27c', sunI: 2.4, zenith: '#34508f', horizon: '#f2b088', ground: '#54504b',
+      hemiSky: '#aab6d2', hemiGround: '#b28866', hemiI: 1.6, fog: '#c2ad9c', fogD: 0.0019, haze: 2, exposure: 1.38,
       grade: { sat: 1.12, warm: 0.07, cool: 0.07, lift: 0.022, contrast: 1.04 } }
   };
 
@@ -473,6 +485,20 @@
       lamp: new T.MeshBasicMaterial({ color: new T.Color(6, 4.6, 2.6), toneMapped: true }),   // HDR: blooms
       gold: std({ color: RP.col('#c9a24a'), roughness: 0.3, metalness: 1, vertexColors: false })
     };
+    // alpha-tested foliage that neither speckles nor shimmers (as Saltline keeps its cut-outs clean): alpha is raised with
+    // the texture's mip level, so distant leaves keep their coverage, and the cut edge is sharpened to a pixel with
+    // screen-space derivatives (Ben Golus's alpha-test sharpening). ts: the texture's size in texels.
+    R.crispAlpha = function (fs, ts) {
+      return fs.replace('#include <alphatest_fragment>', [
+        '#ifdef USE_ALPHATEST',
+        '#ifdef USE_MAP',
+        ' { vec2 tcA = vMapUv * ' + ts.toFixed(1) + '; vec2 dxA = dFdx(tcA), dyA = dFdy(tcA); float lodA = max(0.0, 0.5 * log2(max(dot(dxA, dxA), dot(dyA, dyA)))); diffuseColor.a *= 1.0 + lodA * 0.28; }',
+        '#endif',
+        ' diffuseColor.a = (diffuseColor.a - alphaTest) / max(fwidth(diffuseColor.a), 0.0001) + 0.5;',
+        ' if (diffuseColor.a < 0.5) discard;',
+        ' diffuseColor.a = 1.0;',
+        '#endif'].join('\n'));
+    };
     // leaves: a gentle wind sway in the vertex shader (world-space phase, so neighbouring trees move together)
     RP.windU = { value: 0 };
     RP.mat.leaves.onBeforeCompile = function (sh) {
@@ -481,16 +507,16 @@
         '#include <begin_vertex>\n vec4 wp0 = modelMatrix * vec4(position, 1.0); float sw = sin(uWind*1.7 + wp0.x*0.31 + wp0.z*0.23) + 0.5*sin(uWind*3.1 + wp0.x*0.9);\n transformed.x += sw * 0.045 * max(position.y, 0.0) * 0.3; transformed.z += sw * 0.03 * max(position.y, 0.0) * 0.3;');
       // the clump's normals point out from its centre (build.js): use them as they are on both sides of each card, so
       // a crown shades like a round mass instead of a set of flat panels (one of them always facing away, black)
-      sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);');
+      sh.fragmentShader = R.crispAlpha(sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);'), 512);
     };
-    RP.mat.leaves.customProgramCacheKey = function () { return 'leaves2'; };
+    RP.mat.leaves.customProgramCacheKey = function () { return 'leaves3'; };
     // fronds sway more toward their tips (uv.y), lit from above on both sides (their normals point up: see mapkit.js)
     RP.mat.fronds.onBeforeCompile = function (sh) {
       sh.uniforms.uWind = RP.windU;
       sh.vertexShader = 'uniform float uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>',
         '#include <begin_vertex>\n vec4 wpf = instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0); float swf = sin(uWind*1.3 + wpf.x*0.21 + wpf.z*0.17 + position.x*3.0) * uv.y * uv.y;\n transformed.y += swf * 0.06; transformed.x += swf * 0.04;');
-      sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);');
+      sh.fragmentShader = R.crispAlpha(sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);'), 256);
     };
-    RP.mat.fronds.customProgramCacheKey = function () { return 'fronds1'; };
+    RP.mat.fronds.customProgramCacheKey = function () { return 'fronds2'; };
   };
 })();

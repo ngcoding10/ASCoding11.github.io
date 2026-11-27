@@ -14,6 +14,9 @@
     H.el = { hud: $('hud'), cross: $('cross'), hit: $('hitmark'), hp: $('hpFill'), ar: $('arFill'), alert: $('alert'), wname: $('wName'), ammo: $('wAmmo'), thr: $('wThrow'),
       obj: $('objective'), prompt: $('prompt'), sub: $('subs'), toast: $('toast'), dmg: $('dmgDir'), wheel: $('wheel'), mm: $('minimap'), stam: $('stamina'), stealth: $('stealthTag'), aware: $('aware') };
     H.mmCtx = H.el.mm.getContext('2d');
+    // the minimap canvas at its on-screen size times the screen's density (up to 2): crisp on a phone
+    H.mmSize = function () { var cv = H.el.mm, css = cv.clientWidth || 180, n = Math.round(css * Math.min(window.devicePixelRatio || 1, 2)); if (cv.width !== n) { cv.width = n; cv.height = n; } };
+    H.mmSize(); window.addEventListener('resize', H.mmSize);
     RP.on('hitmark', function (k) { H.el.hit.className = 'on ' + k; clearTimeout(H._hm); H._hm = setTimeout(function () { H.el.hit.className = ''; }, k === 'kill' ? 260 : 140); RP.Audio.ui(k === 'kill' ? 'kill' : 'hit'); H.lastAction = RP.G.time; });
     RP.on('sub', function (text, dur) { H.subs.push({ text: text, t: dur || 2.5 }); if (H.subs.length > 3) H.subs.shift(); renderSubs(); });
     RP.on('toast', function (text) { H.el.toast.textContent = text; H.el.toast.classList.add('on'); H.toastT = 2.2; });
@@ -179,6 +182,8 @@
   // ------------------------------------------------------------------ minimap
   function drawMinimap(p) {
     var c = H.mmCtx, cv = H.el.mm, S = cv.width, mm = RP.map.minimap; if (!mm) return;
+    if (!H._mmSized) { H._mmSized = true; H.mmSize(); S = cv.width; }
+    c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
     var scale = S / 110;   // 110 m across
     c.save(); c.clearRect(0, 0, S, S);
     c.beginPath(); c.arc(S / 2, S / 2, S / 2 - 1, 0, 6.283); c.clip();
