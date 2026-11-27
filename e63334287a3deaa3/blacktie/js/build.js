@@ -303,7 +303,12 @@
     var q = R.q.fol;
     Object.keys(B.leaves).forEach(function (k) {
       var l = B.leaves[k], n = l.c.length / 3, keep = [];
-      for (var i = 0; i < n; i++) if (q >= 1 || M.hash2(i * 0.37 + l.cx, 1.3 + l.cz) < q) keep.push(i);
+      // thinning (Low/Medium) drops only small clumps (scrub, fruit, climbers): a tree's crown is always kept, so no tree
+      // stands bare with its lemons hanging in the air
+      for (var i = 0; i < n; i++) {
+        var big = Math.max(Math.abs(l.m[i * 16]) + Math.abs(l.m[i * 16 + 2]), Math.abs(l.m[i * 16 + 8]) + Math.abs(l.m[i * 16 + 10])) >= 1.9;
+        if (q >= 1 || big || M.hash2(i * 0.37 + l.cx, 1.3 + l.cz) < q) keep.push(i);
+      }
       if (!keep.length) return;
       var im = new T.InstancedMesh(B.geos.clump, RP.mat.leaves, keep.length), col = new T.Color();
       for (i = 0; i < keep.length; i++) {

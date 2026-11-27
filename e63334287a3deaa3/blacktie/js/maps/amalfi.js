@@ -635,14 +635,12 @@
     [[-153.5, 37.6], [-146.5, 37.8], [-141, 37.6], [-141, 14.5]].forEach(function (t) { K.tree('lemon', t[0], t[1], y); });   // round the pool, not in it
     // lemon terraces below the villa (stealth route): dry-stone retaining walls and pergolas
     [[-176, 2, 20], [-150, -10, 16.5]].forEach(function (p) {
-      for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) {
-        var lx = p[0] - 6 + a * 6, lz = p[1] - 5 + b * 5;
-        K.tree('lemon', lx, lz, p[2]);
-        B.geo('bark', B.geos.cyl6, lx + 2.5, p[2], lz + 2.2, 0, 0.12, 2.4, 0.12, C('#6d5a45'), { cls: 'detail' });
-      }
+      for (var a = 0; a < 3; a++) for (var b = 0; b < 3; b++) K.tree('lemon', p[0] - 6 + a * 6, p[1] - 5 + b * 5, p[2]);
+      // the pergola: posts where its beams cross, the long beams resting on the posts, the cross beams on top of them
+      for (a = 0; a < 4; a++) for (var b2 = 0; b2 < 3; b2++) B.geo('bark', B.geos.cyl6, p[0] - 9 + a * 6, p[2], p[1] - 6 + b2 * 6, 0, 0.12, 2.4, 0.12, C('#6d5a45'), { cls: 'detail' });
       K.wall(p[0] - 12, p[1] + 9, p[0] + 12, p[1] + 9, p[2] - 3, 3.1, 0.7, '#b9ac96', { mat: 'rubble', cmat: 'stone', uvs: 2 });
       for (a = 0; a < 4; a++) B.box('bark', p[0] - 9 + a * 6, p[2] + 2.4, p[1], 0.08, 0.08, 14, 0, { col: C('#6d5f50'), cls: 'detail', ao: 0 });
-      for (a = 0; a < 5; a++) B.box('bark', p[0], p[2] + 2.48, p[1] - 6 + a * 3, 18, 0.06, 0.06, 0, { col: C('#6d5f50'), cls: 'detail', ao: 0 });
+      for (a = 0; a < 5; a++) B.box('bark', p[0], p[2] + 2.48, p[1] - 6 + a * 3, 18.4, 0.06, 0.06, 0, { col: C('#6d5f50'), cls: 'detail', ao: 0 });
     });
     // steps from the villa down to its private landing (phase 2 boat dock)
     K.stair(-178, 64.5, y, -178, 80, 3, 2.2, { base: 0, sideMat: 'rubble', cls: 'shell' });
