@@ -87,7 +87,9 @@
       if (eh) {
         end = eh.point;
         var dist = eh.t, fall = def.range ? M.clamp((dist - def.range[0]) / Math.max(1, def.range[1] - def.range[0]), 0, 1) : 0;
-        var dmg = def.dmg * (1 - fall * (1 - (def.minFrac || 0.5))) * eh.mult * (opts.dmgMul || 1);
+        // (the 3x head multiplier is for the player's shots; a hit on the player's head counts about like a body hit)
+        var mult = eh.ent.team === 'player' ? Math.min(eh.mult, 1.25) : eh.mult;
+        var dmg = def.dmg * (1 - fall * (1 - (def.minFrac || 0.5))) * mult * (opts.dmgMul || 1);
         eh.ent.takeDamage(dmg, { from: shooter, dir: d, point: end, region: eh.region, weapon: def, bullet: true, force: (def.pellets ? 1.4 : def.dmg > 80 ? 4 : 1.8) });
         RP.FX.impact({ x: end.x, y: end.y, z: end.z, nx: -d.x, ny: -d.y, nz: -d.z, mat: eh.ent.hitMat || 'flesh' }, d.x, d.y, d.z);
         last = { point: end, ent: eh.ent };

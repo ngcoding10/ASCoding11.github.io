@@ -101,8 +101,14 @@
     if (g.armour > 0 && info && info.region === 'torso') { var ab = Math.min(g.armour, amt * 0.5); g.armour -= ab; amt -= ab; }
     // elites sometimes slip a melee attack
     if (info && info.melee && g.type === 'elite' && Math.random() < 0.25 && !g.stagger && RP.G.player.counterT <= 0) { g.dodgeT = 0.4; g.actor.move('dodge'); return; }
-    g.hp -= amt;
+    // the player's bullet in the head: almost always fatal (a graze now and then, a little more often on elites,
+    // still hurts badly and staggers). Only the player's shots: guards' headshots on the player aren't special.
     var from = info && info.from;
+    if (info && info.bullet && info.region === 'head' && from && from.team === 'player') {
+      if (Math.random() < (g.type === 'elite' ? 0.8 : 0.9)) { amt = g.hp + g.armour + 1; info.headshot = true; }
+      else { amt = Math.max(amt, g.hp * 0.6); info.graze = true; }
+    }
+    g.hp -= amt;
     if (from && from.team === 'player') { alertGuard(g, from.pos, true); if (g.aware < 1) g.aware = 1; }
     if (info && info.dir) g.actor.flinch(-info.dir.x, -info.dir.z, Math.min(1.2, amt / 30));
     if (g.hp <= 0) { kill(g, info); return; }

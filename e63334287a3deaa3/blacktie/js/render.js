@@ -428,6 +428,15 @@
       if (rr() < 0.5) { lx.fillStyle = 'rgba(255,255,235,0.25)'; lx.beginPath(); lx.ellipse(x0 - 1, y0 - 1, 2 + rr() * 2, 1, rr() * 3.14, 0, 6.29); lx.fill(); }   // a glint
     }
     TEX.leaves = tex(lc, true); TEX.leaves.wrapS = TEX.leaves.wrapT = T.ClampToEdgeWrapping;
+    // a palm frond: a central rib (u = 0.5) with narrow leaflets angled toward the tip on both sides (v = 1 at the tip)
+    var fc = canvas(256), fx = fc.getContext('2d'), fr = M.rng(9), FW = 256, FH = 256;
+    fx.strokeStyle = 'rgb(120,130,70)'; fx.lineWidth = 4; fx.beginPath(); fx.moveTo(FW / 2, FH); fx.lineTo(FW / 2, 0); fx.stroke();
+    for (var fj = 0; fj < 70; fj++) {
+      var fy = FH - 4 - fj * (FH - 8) / 70, flen = (FW / 2 - 6) * (0.75 + fr() * 0.25), gg2 = 110 + fr() * 110;
+      fx.strokeStyle = 'rgb(' + (gg2 * 0.85 | 0) + ',' + (gg2 | 0) + ',' + (gg2 * 0.6 | 0) + ')'; fx.lineWidth = 2.2 + fr() * 1.4;
+      [-1, 1].forEach(function (sd) { fx.beginPath(); fx.moveTo(FW / 2, fy); fx.quadraticCurveTo(FW / 2 + sd * flen * 0.5, fy - 10, FW / 2 + sd * flen, fy - 26 - fr() * 10); fx.stroke(); });
+    }
+    TEX.frond = tex(fc, true); TEX.frond.wrapS = TEX.frond.wrapT = T.ClampToEdgeWrapping;
     // soft round blob (contact shadows, smoke, dust)
     var bc = canvas(64), bx2 = bc.getContext('2d'), gr = bx2.createRadialGradient(32, 32, 0, 32, 32, 32);
     gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.5)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
@@ -458,6 +467,7 @@
       dark: std({ color: RP.col('#16120f'), roughness: 1 }),           // window and door openings
       sand: std({ map: X.sand, roughness: 0.95, vertexColors: true }),
       leaves: std({ map: X.leaves, alphaTest: 0.45, side: T.DoubleSide, roughness: 0.8 }),
+      fronds: std({ map: X.frond, alphaTest: 0.4, side: T.DoubleSide, roughness: 0.75 }),
       bark: std({ roughness: 0.95 }),
       fabric: std({ roughness: 0.9, vertexColors: true, side: T.DoubleSide }),
       lamp: new T.MeshBasicMaterial({ color: new T.Color(6, 4.6, 2.6), toneMapped: true }),   // HDR: blooms
@@ -474,5 +484,13 @@
       sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);');
     };
     RP.mat.leaves.customProgramCacheKey = function () { return 'leaves2'; };
+    // fronds sway more toward their tips (uv.y), lit from above on both sides (their normals point up: see mapkit.js)
+    RP.mat.fronds.onBeforeCompile = function (sh) {
+      sh.uniforms.uWind = RP.windU;
+      sh.vertexShader = 'uniform float uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>',
+        '#include <begin_vertex>\n vec4 wpf = instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0); float swf = sin(uWind*1.3 + wpf.x*0.21 + wpf.z*0.17 + position.x*3.0) * uv.y * uv.y;\n transformed.y += swf * 0.06; transformed.x += swf * 0.04;');
+      sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\n normal = normalize(vNormal);');
+    };
+    RP.mat.fronds.customProgramCacheKey = function () { return 'fronds1'; };
   };
 })();

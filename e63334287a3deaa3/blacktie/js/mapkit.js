@@ -278,6 +278,46 @@
   // ------------------------------------------------------------------ plants
   function leaf(x, y, z, sx, sy, sz, hex, rot) { B.leaf(x, y, z, sx, sy, sz, Cv(hex, 0.85 + Math.random() * 0.3), rot); }
   K.leaf = leaf;
+  // palm trunk: radius 0.27 at the foot to 0.17 under the crown, ringed by old leaf scars, curving to +x by `bend`
+  function palmTrunk(h, bend) {
+    var S = 14, N = 9, pos = [], nrm = [], uv = [], idx = [];
+    for (var j = 0; j <= S; j++) {
+      var t = j / S, y = t * h, off = bend * t * t, rr = (0.27 - 0.1 * t) * (1 + 0.06 * Math.cos(y / 0.32 * 6.2832));
+      for (var k = 0; k <= N; k++) {
+        var a = k / N * 6.2832, cx = Math.cos(a), cz = Math.sin(a);
+        pos.push(off + cx * rr, y, cz * rr); nrm.push(cx, 0.1, cz); uv.push(k / N, y);
+      }
+    }
+    for (j = 0; j < S; j++) for (k = 0; k < N; k++) { var a0 = j * (N + 1) + k, b0 = a0 + N + 1; idx.push(a0, b0, a0 + 1, a0 + 1, b0, b0 + 1); }
+    var g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new T.Float32BufferAttribute(nrm, 3));
+    g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  }
+  // every palm frond on the map: one instanced mesh of an arching, feathered blade (RP.mat.fronds), made once B.finish runs
+  K.FRONDS = [];
+  function frondGeo() {
+    var S = 10, pos = [], nrm = [], uv = [], idx = [];
+    for (var j = 0; j <= S; j++) {
+      var t = j / S, w = 0.5 * Math.sin(Math.PI * Math.pow(t, 0.75)) * (1 - 0.25 * t), y = 0.32 * t - 0.78 * t * t, z = t;
+      [-1, 0, 1].forEach(function (s, k) { pos.push(s * w * 0.5, y + (k === 1 ? 0.03 : -0.02 * Math.abs(s)), z); nrm.push(0, 1, 0); uv.push(k / 2, t); });
+    }
+    for (j = 0; j < S; j++) for (var k = 0; k < 2; k++) { var a0 = j * 3 + k, b0 = a0 + 3; idx.push(a0, b0, a0 + 1, a0 + 1, b0, b0 + 1); }
+    var g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new T.Float32BufferAttribute(nrm, 3));
+    g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+    return g;
+  }
+  B.onFinish = B.onFinish || [];
+  B.onFinish.push(function () {
+    if (!K.FRONDS.length || !RP.mat.fronds) return;
+    var im = new T.InstancedMesh(frondGeo(), RP.mat.fronds, K.FRONDS.length), m4 = new T.Matrix4(), q = new T.Quaternion(), e = new T.Euler(), s = new T.Vector3(), p = new T.Vector3(), c = new T.Color();
+    K.FRONDS.forEach(function (f, i) {
+      e.set(f.tilt, f.yaw, 0, 'YXZ'); q.setFromEuler(e); m4.compose(p.set(f.x, f.y, f.z), q, s.set(f.L * 1.15, f.L, f.L));
+      im.setMatrixAt(i, m4); im.setColorAt(i, c.copy(RP.col(f.c)));
+    });
+    im.instanceColor.needsUpdate = true; im.castShadow = RP.R.qname !== 'low'; im.receiveShadow = true; im.matrixAutoUpdate = false; im.computeBoundingSphere();
+    RP.R.scene.add(im); B.instanced.push(im); B.tris += K.FRONDS.length * 40;
+    K.FRONDS = [];
+  });
   K.tree = function (kind, x, z, y) {
     y = y == null ? W.terrainH(x, z) : y;
     var r = Math.random, i;
@@ -294,9 +334,17 @@
       for (i = 0; i < 4; i++) { var t = i / 4; leaf(x, y + 1.2 + t * hc * 0.8, z, 2.3 * (1 - t * 0.7), hc / 3.6, 2.3 * (1 - t * 0.7), '#2c4a2a'); }
       W.addBox({ x: x, z: z, y0: y - 1, y1: y + hc, hx: 0.6, hz: 0.6, mat: 'wood', see: true });
     } else if (kind === 'palm') {
-      var hp = 6 + r() * 3;
-      B.geo('bark', B.geos.cyl6, x, y - 0.2, z, 0, 0.36, hp, 0.36, C('#8a7a68'), { pitch: (r() - 0.5) * 0.16, cls: 'shell', uvs: 1 });
-      for (i = 0; i < 7; i++) leaf(x, y + hp, z, 5, 1.2, 1.6, '#4d7a35', i / 7 * 6.28);
+      // a date palm: a tapered, ringed trunk with a gentle lean and curve, a fibrous crown where the fronds start, and
+      // arching fronds (one instanced mesh for every palm on the map, made at B.finish) set exactly at the trunk's top
+      var hp = 6 + r() * 3, yawP = r() * 6.28, bend = 0.35 + r() * 0.5, tg = palmTrunk(hp, bend);
+      B.geo('bark', tg, x, y - 0.2, z, yawP, 1, 1, 1, C('#8f7d68'), { cls: 'shell', uvs: 1 });
+      var tx = x + Math.cos(yawP) * bend, tz = z - Math.sin(yawP) * bend, ty = y - 0.2 + hp;   // the top, after the bend (local +x)
+      B.geo('bark', B.geos.sphere, tx, ty - 0.3, tz, 0, 0.5, 0.75, 0.5, C('#5f5a38'), { cls: 'shell' });              // the crown's fibrous boot, under the fronds
+      var nf = 11, ph = r() * 6.28;
+      for (i = 0; i < nf; i++) {
+        var a = ph + i / nf * 6.2832 + (r() - 0.5) * 0.3, low = i % 3 === 0, L = (low ? 3.4 : 4.0) + r() * 0.8;
+        K.FRONDS.push({ x: tx, y: ty + 0.15 + (low ? -0.15 : 0.1), z: tz, yaw: a, tilt: low ? 0.25 : -0.15 + r() * 0.2, L: L, c: low ? '#7f8a3e' : r() < 0.5 ? '#4f7a32' : '#5d8638' });
+      }
       W.addBox({ x: x, z: z, y0: y - 1, y1: y + hp, hx: 0.25, hz: 0.25, mat: 'wood', see: true });
     } else if (kind === 'lemon') {
       B.geo('bark', B.geos.cyl6, x, y - 0.2, z, 0, 0.2, 1.5, 0.2, C('#6d5a45'), { cls: 'detail', uvs: 1 });

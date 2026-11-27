@@ -320,6 +320,7 @@
     // far plane moves out; the chunks' own ranges keep the cost where it was
     R.camera.far = 9000; R.camera.updateProjectionMatrix();
     B._farKey = '';
+    (B.onFinish || []).forEach(function (f) { f(); });   // map kits that make their own meshes once everything is placed (palm fronds)
   };
 
   // ------------------------------------------------------------------ terrain chunks
