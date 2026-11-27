@@ -573,9 +573,22 @@
     for (i = 0; i < 4; i++) B.box('bark', -160 + i * 3.5, y + 2.9, 48, 0.12, 0.12, 9, 0, { col: C('#7a6652'), ao: 0, cls: 'detail' });
     for (i = 0; i < 7; i++) B.box('bark', -154.75, y + 3.02, 44 + i * 1.33, 11.4, 0.07, 0.07, 0, { col: C('#7a6652'), ao: 0, cls: 'detail' });
     // string lights over the terrace (bloom at dusk)
-    for (i = 0; i < 4; i++) for (k = 0; k < 14; k++) {
-      var sx2 = -186 + k * 2.8, sz2 = 40 + i * 6.5, sag = Math.sin(k / 13 * Math.PI) * 0.6;
-      B.box('lamp', sx2, y + 3.6 - sag, sz2, 0.1, 0.1, 0.1, 0, { cls: 'flat' });
+    // (each row hangs from a thin pole at either end, on a wire that sags between the bulbs)
+    for (i = 0; i < 4; i++) {
+      var sz2 = 40 + i * 6.5, pts = [[-188.4, y + 3.75]];
+      for (k = 0; k < 14; k++) {
+        var sx2 = -186 + k * 2.8, sag = Math.sin((k + 1) / 15 * Math.PI) * 0.6;
+        B.box('lamp', sx2, y + 3.6 - sag - 0.05, sz2, 0.1, 0.1, 0.1, 0, { cls: 'flat' });
+        pts.push([sx2, y + 3.6 - sag + 0.02]);
+      }
+      pts.push([-186 + 14 * 2.8 - 0.4, y + 3.75]);
+      [pts[0][0], pts[pts.length - 1][0]].forEach(function (px) {
+        B.geo('metal', B.geos.cyl6, px, y, sz2, 0, 0.07, 3.8, 0.07, C('#3a3836'), { cls: 'detail' });
+      });
+      for (k = 0; k < pts.length - 1; k++) {
+        var a0 = pts[k], b0 = pts[k + 1], dx = b0[0] - a0[0], dy = b0[1] - a0[1], len = Math.hypot(dx, dy);
+        B.geo('metal', B.geos.cyl6, a0[0], a0[1], sz2, 0, 0.018, len, 0.018, C('#2a2826'), { cls: 'detail', roll: Math.atan2(dy, dx) - Math.PI / 2 });
+      }
     }
     [-186, -150].forEach(function (x) { K.lamp(x, 38.5, y); K.lamp(x, 62, y); });
     // the reflecting pool east of the house: a pale tiled basin 0.6 m deep inside a stone rim, under a glassy surface
