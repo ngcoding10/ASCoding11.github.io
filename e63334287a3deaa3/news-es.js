@@ -7,6 +7,12 @@
 (function () {
   if (!window.BackRoomLang) return;
   BackRoomLang.add({
+    "Flood Crew: tougher jobs, fewer hints": "Flood Crew: trabajos más duros, menos pistas",
+    "Flood Crew": "Flood Crew",
+    "The first job says much less: just a few short lines, and you find the rest yourself.": "El primer trabajo dice mucho menos: solo unas frases cortas, y el resto lo descubres tú.",
+    "Tanners Field has no pegs or step-by-step lines any more, but it can always be finished now: if water sits in your trench, dig the high part deeper.": "Tanners Field ya no tiene estacas ni instrucciones paso a paso, pero ahora siempre se puede terminar: si el agua se queda en tu canal, cava más hondo la parte alta.",
+    "Pell Street is harder: deeper water and more rubbish that washes back onto the drains.": "Pell Street es más difícil: el agua es más profunda y hay más basura que vuelve a tapar los desagües.",
+    "Water drains a little slower, and the target times for three stars are tighter.": "El agua baja un poco más despacio y los tiempos para tres estrellas son más ajustados.",
     "The site is called ASCoding everywhere": "El sitio se llama ASCoding en todas partes",
     "The name at the top and bottom of every page now reads ASCoding, on the main site, the Back Room and the phone page.": "El nombre arriba y abajo de cada página ahora dice ASCoding, en el sitio principal, el Back Room y la página para celular.",
     "The phone page keeps the name ASCoding games when you add it to your home screen.": "La página para celular conserva el nombre ASCoding games cuando la agregas a tu pantalla de inicio.",

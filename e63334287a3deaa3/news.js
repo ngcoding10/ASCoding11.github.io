@@ -90,6 +90,12 @@
  */
 (function () {
   var NEWS = [
+    {date: '2026-11-27', version: '2.14', title: 'Flood Crew: tougher jobs, fewer hints', kind: 'feature',
+     tags: ['Flood Crew'], items: [
+      'The first job says much less: just a few short lines, and you find the rest yourself.',
+      'Tanners Field has no pegs or step-by-step lines any more, but it can always be finished now: if water sits in your trench, dig the high part deeper.',
+      'Pell Street is harder: deeper water and more rubbish that washes back onto the drains.',
+      'Water drains a little slower, and the target times for three stars are tighter.']},
     {date: '2026-11-27', version: '2.13.5', title: 'The site is called ASCoding everywhere', kind: 'fix',
      items: [
       'The name at the top and bottom of every page now reads ASCoding, on the main site, the Back Room and the phone page.',
